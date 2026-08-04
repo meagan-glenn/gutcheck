@@ -10,9 +10,9 @@ When an animal gets sick, its owner becomes an amateur epidemiologist overnight 
 |---|---|---|
 | ![Home](docs/screenshots/home.png) | ![Capture](docs/screenshots/capture.png) | ![Urgent](docs/screenshots/capture-urgent.png) |
 
-| Pet timeline | Vet summary | Cross-pet insights |
-|---|---|---|
-| ![Timeline](docs/screenshots/pet-timeline.png) | ![Summary](docs/screenshots/vet-summary.png) | ![Insights](docs/screenshots/insights.png) |
+| Pet timeline | Vet summary |
+|---|---|
+| ![Timeline](docs/screenshots/pet-timeline.png) | ![Summary](docs/screenshots/vet-summary.png) |
 
 ## Product decisions worth noticing
 
@@ -20,14 +20,22 @@ When an animal gets sick, its owner becomes an amateur epidemiologist overnight 
 - **The 4Cs.** Consistency, Color, Coating, Contents as four independent axes — a perfectly formed stool can still be black and tarry. Owners tap a five-point plain-language scale ("soft serve"); the vet-standard 1–7 value is stored underneath.
 - **Urgent findings break the layout.** One-tap muscle memory is the point of capture — so when an axis hits the Urgent tier, the vet action becomes the primary button and plain save demotes to a text link.
 - **Multi-pet is the wedge.** Different diets under one roof make the household a natural control group; cross-feeding ("who ate whose food") is a first-class event no single-pet app can represent.
-- **Attribution handled honestly.** Protocols are recorded as bundles, narrowed across episodes by intersection, always framed as association — with counter-evidence shown. The app never diagnoses.
+- **Attribution handled honestly.** Anything that preceded an episode by ≤72h — cross-feeding, med changes, new items — is surfaced in the vet summary as association, phrased as questions for a professional. The app never diagnoses.
 - **Playfulness lives in the language, not the icons.** "Soft serve" is a label, not a 🍦. Nothing cute appears past the Monitor tier, and poop photos are blurred until deliberately tapped.
 
 ## What's implemented
 
-Household home with per-pet status · 4C capture with photo attach (system picker; AI scoring stubbed as prefill-and-correct) · four-tier triage ladder with liquid-frequency escalation · episode state machine with chronic pinning · one-tap interventions, protocol capture and replay · 48-hour lookback · cross-feeding and med/stress exposure events · association-only insights with counter-evidence · unified per-pet timeline · pet editing · shareable vet summary (30-day headline, suspected triggers ≤72h before onset, flag log, questions-for-the-vet).
+Household home with per-pet status · 4C capture with photo attach (system picker; AI scoring stubbed as prefill-and-correct) · four-tier triage ladder with liquid-frequency escalation · episode state machine (baseline → watch → 3 consecutive normals → resolved) · one-tap interventions · 48-hour lookback · cross-feeding and med/stress exposure events · unified per-pet timeline · pet editing · shareable vet summary (30-day headline, suspected triggers ≤72h before onset, what was tried, flag log, questions-for-the-vet).
 
-**Not yet:** real AI photo scoring, PDF export, onboarding flow, household invites / second-opinion loop.
+## Scope cuts
+
+The PRD specs more than this. Three features were built, then deliberately cut to keep V1 honest — the core job is *track poop changes, capture what preceded them, hand the vet a summary*, and everything below needs episode history that a new user won't have:
+
+- **Protocol capture & replay** ("this worked last time — run it again"). A retention feature that delivers nothing until episode #2, which may be months away. Interventions are still logged live — "what have you tried" is a question every vet asks — but they're a record, not a replayable protocol. Strongest V2 candidate.
+- **The Insights tab.** The association engine's real distribution channel is the vet summary, where a professional interprets the correlations. A standalone insights screen is the most speculative surface in the app and the emptiest on day one.
+- **Chronic pinning** (a mode for animals whose episode never closes). Real need, edge persona — the kind of thing you add when a chronically-ill-dog owner asks for it.
+
+**Also not yet:** real AI photo scoring, PDF export, onboarding flow, household invites / second-opinion loop.
 
 ## Build & run
 

@@ -76,7 +76,7 @@ struct HomeView: View {
         .buttonStyle(.bordered)
     }
 
-    /// Pre-select the pet most likely being logged: first one in watch/chronic mode.
+    /// Pre-select the pet most likely being logged: first one in watch mode.
     private var defaultCapturePet: UUID? {
         let watched = store.data.pets.first { $0.mode != .baseline }
         return (watched ?? store.data.pets.first)?.id

@@ -16,7 +16,6 @@ extension PetMode {
         switch self {
         case .baseline: return Color.secondary.opacity(0.5)
         case .watch: return Tier.monitor.color
-        case .chronic: return Color(red: 0.48, green: 0.35, blue: 0.72)
         }
     }
 }

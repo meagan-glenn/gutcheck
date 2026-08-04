@@ -19,8 +19,6 @@ struct RootView: View {
                 .tabItem { Label("Home", systemImage: "house.fill") }
             HistoryView()
                 .tabItem { Label("Episodes", systemImage: "clock.arrow.circlepath") }
-            InsightsView()
-                .tabItem { Label("Insights", systemImage: "chart.line.uptrend.xyaxis") }
         }
     }
 }

@@ -10,13 +10,11 @@ enum Species: String, Codable, CaseIterable {
 enum PetMode: String, Codable {
     case baseline
     case watch
-    case chronic
 
     var label: String {
         switch self {
         case .baseline: return "Baseline"
         case .watch: return "Watch"
-        case .chronic: return "Chronic watch"
         }
     }
 }
@@ -336,10 +334,9 @@ struct Pet: Identifiable, Codable, Equatable {
     var avatar: String // emoji avatar (avatars only — never on the clinical scale)
     var conditions: [String]
     var mode: PetMode
-    var isChronic: Bool
 
     init(id: UUID = UUID(), name: String, species: Species, breed: String, avatar: String,
-         conditions: [String] = [], mode: PetMode = .baseline, isChronic: Bool = false) {
+         conditions: [String] = [], mode: PetMode = .baseline) {
         self.id = id
         self.name = name
         self.species = species
@@ -347,7 +344,6 @@ struct Pet: Identifiable, Codable, Equatable {
         self.avatar = avatar
         self.conditions = conditions
         self.mode = mode
-        self.isChronic = isChronic
     }
 }
 
@@ -430,7 +426,6 @@ struct Episode: Identifiable, Codable {
     var start: Date
     var end: Date?
     var note: String // "what's wrong"
-    var protocolKinds: [InterventionKind]? // captured on resolution
 
     var isActive: Bool { end == nil }
 
@@ -439,13 +434,12 @@ struct Episode: Identifiable, Codable {
         return max(1, Calendar.current.dateComponents([.day], from: start, to: endDate).day.map { $0 + 1 } ?? 1)
     }
 
-    init(id: UUID = UUID(), petID: UUID, start: Date, end: Date? = nil, note: String, protocolKinds: [InterventionKind]? = nil) {
+    init(id: UUID = UUID(), petID: UUID, start: Date, end: Date? = nil, note: String) {
         self.id = id
         self.petID = petID
         self.start = start
         self.end = end
         self.note = note
-        self.protocolKinds = protocolKinds
     }
 }
 

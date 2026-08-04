@@ -88,11 +88,6 @@ final class AppStore: ObservableObject {
             .sorted { $0.start > $1.start }
     }
 
-    /// The most recent captured protocol for this pet — powers replay (W5).
-    func lastProtocol(for petID: UUID) -> Episode? {
-        resolvedEpisodes(for: petID).first { ($0.protocolKinds ?? []).isEmpty == false }
-    }
-
     func resolutionProgress(for episode: Episode) -> Int {
         consecutiveNormals(events: events(in: episode).sorted { $0.date < $1.date })
     }
@@ -141,17 +136,16 @@ final class AppStore: ObservableObject {
     func startEpisode(petID: UUID, note: String) -> Episode {
         let episode = Episode(petID: petID, start: Date(), note: note)
         data.episodes.append(episode)
-        if let index = data.pets.firstIndex(where: { $0.id == petID }), !data.pets[index].isChronic {
+        if let index = data.pets.firstIndex(where: { $0.id == petID }) {
             data.pets[index].mode = .watch
         }
         return episode
     }
 
-    func resolveEpisode(_ episode: Episode, protocolKinds: [InterventionKind]) {
+    func resolveEpisode(_ episode: Episode) {
         guard let index = data.episodes.firstIndex(where: { $0.id == episode.id }) else { return }
         data.episodes[index].end = Date()
-        data.episodes[index].protocolKinds = protocolKinds
-        if let petIndex = data.pets.firstIndex(where: { $0.id == episode.petID }), !data.pets[petIndex].isChronic {
+        if let petIndex = data.pets.firstIndex(where: { $0.id == episode.petID }) {
             data.pets[petIndex].mode = .baseline
         }
     }
@@ -159,13 +153,6 @@ final class AppStore: ObservableObject {
     func addIntervention(kind: InterventionKind, petID: UUID) {
         let episodeID = activeEpisode(for: petID)?.id
         data.interventions.append(Intervention(petID: petID, episodeID: episodeID, kind: kind, date: Date()))
-    }
-
-    /// One-tap protocol replay: log every intervention from a prior episode's protocol.
-    func replayProtocol(from previous: Episode, petID: UUID) {
-        for kind in previous.protocolKinds ?? [] {
-            addIntervention(kind: kind, petID: petID)
-        }
     }
 
     func logCrossFeed(eaterID: UUID, foodOwnerID: UUID, amount: String) {
@@ -275,102 +262,6 @@ final class AppStore: ObservableObject {
         return Lookback(newItems: relevantItems, crossFeeds: feeds, interventions: meds, outputs: outs, exposures: exposed)
     }
 
-    // MARK: - Insights (W7, honest rules)
-
-    struct Insight: Identifiable {
-        var id = UUID()
-        var title: String
-        var detail: String
-        var counterEvidence: String?
-        var isCrossPet: Bool
-    }
-
-    var insights: [Insight] {
-        var results: [Insight] = []
-
-        // New household items introduced within 48h before an episode start.
-        for item in data.items {
-            guard case .household = item.scope else { continue }
-            let linked = data.episodes.filter { episode in
-                let gap = episode.start.timeIntervalSince(item.firstIntroduced)
-                return gap >= 0 && gap <= 48 * 3600
-            }
-            if !linked.isEmpty {
-                let names = linked.compactMap { pet($0.petID)?.name }.joined(separator: ", ")
-                results.append(Insight(
-                    title: "\(item.name) introduced \(relativeDay(item.firstIntroduced))",
-                    detail: "\(linked.count) episode\(linked.count == 1 ? "" : "s") (\(names)) began within 48h of it entering the house. Association, not diagnosis.",
-                    counterEvidence: nil,
-                    isCrossPet: Set(linked.map { $0.petID }).count > 1
-                ))
-            }
-        }
-
-        // Cross-feeding preceding an episode by <=48h.
-        for feed in data.crossFeeds {
-            let linked = data.episodes.filter { episode in
-                episode.petID == feed.eaterID &&
-                episode.start.timeIntervalSince(feed.date) >= 0 &&
-                episode.start.timeIntervalSince(feed.date) <= 48 * 3600
-            }
-            if let episode = linked.first,
-               let eater = pet(feed.eaterID), let owner = pet(feed.foodOwnerID) {
-                results.append(Insight(
-                    title: "\(eater.name) ate \(owner.name)'s food before this episode",
-                    detail: "\(eater.name) got into \(owner.name)'s food \(relativeDay(feed.date)) — \(hoursBetween(feed.date, episode.start))h before the episode opened. If this repeats, the fix may be feeding in separate rooms.",
-                    counterEvidence: nil,
-                    isCrossPet: true
-                ))
-            }
-        }
-
-        // Exposures (meds, stress) preceding an episode by <=72h.
-        for exposure in data.exposures {
-            let linked = data.episodes.filter { episode in
-                exposure.applies(to: episode.petID) &&
-                episode.start.timeIntervalSince(exposure.date) >= 0 &&
-                episode.start.timeIntervalSince(exposure.date) <= 72 * 3600
-            }
-            if let episode = linked.first, let petRecord = pet(episode.petID) {
-                let noteSuffix = exposure.note.isEmpty ? "" : " (\(exposure.note))"
-                let medLine = exposure.kind.isMedication
-                    ? " Loose stool after a med change is common — worth telling the vet, not a diagnosis."
-                    : " Association, not diagnosis."
-                results.append(Insight(
-                    title: "\(exposure.kind.label) before \(petRecord.name)'s episode",
-                    detail: "\(exposure.kind.label)\(noteSuffix) was logged \(hoursBetween(exposure.date, episode.start))h before the episode opened." + medLine,
-                    counterEvidence: nil,
-                    isCrossPet: exposure.petID == nil && Set(linked.map { $0.petID }).count > 1
-                ))
-            }
-        }
-
-        // Protocol narrowing across resolutions (W6).
-        for petRecord in data.pets {
-            let resolved = resolvedEpisodes(for: petRecord.id).filter { ($0.protocolKinds ?? []).isEmpty == false }
-            guard resolved.count >= 2 else { continue }
-            var counts: [InterventionKind: Int] = [:]
-            for episode in resolved {
-                for kind in Set(episode.protocolKinds ?? []) {
-                    counts[kind, default: 0] += 1
-                }
-            }
-            if let (topKind, topCount) = counts.max(by: { $0.value < $1.value }), topCount == resolved.count {
-                results.append(Insight(
-                    title: "\(topKind.label) appears in all \(resolved.count) of \(petRecord.name)'s resolutions",
-                    detail: "Still association — but the intersection is tightening across episodes.",
-                    counterEvidence: counts
-                        .filter { $0.value < resolved.count }
-                        .map { "\($0.key.label) appears in \($0.value) of \(resolved.count)" }
-                        .joined(separator: " · "),
-                    isCrossPet: false
-                ))
-            }
-        }
-
-        return results
-    }
-
     // MARK: - Seed data
 
     static func seed() -> AppData {
@@ -379,7 +270,7 @@ final class AppStore: ObservableObject {
         func hoursAgo(_ h: Double) -> Date { now.addingTimeInterval(-h * 3600) }
 
         let navi = Pet(name: "Navi", species: .dog, breed: "Cattle dog mix", avatar: "🐕",
-                       conditions: ["Sensitive gut"], mode: .chronic, isChronic: true)
+                       conditions: ["Sensitive gut"], mode: .watch)
         let albus = Pet(name: "Albus", species: .dog, breed: "Golden retriever", avatar: "🦮")
         let arya = Pet(name: "Arya", species: .dog, breed: "Border collie", avatar: "🐶")
 
@@ -394,10 +285,9 @@ final class AppStore: ObservableObject {
             Item(name: "Yak cheese chew", scope: .household, kind: "chew", firstIntroduced: daysAgo(2.2)),
         ]
 
-        // A resolved past episode for Navi, with a captured protocol → powers replay.
+        // A resolved past episode for Navi, with the interventions that were tried.
         let pastEpisode = Episode(petID: navi.id, start: daysAgo(61), end: daysAgo(57),
-                                  note: "Soft stool after park weekend",
-                                  protocolKinds: [.fasted, .blandDiet, .removedItem])
+                                  note: "Soft stool after park weekend")
         var oldReading = StoolReading.normal
         oldReading.consistency = .softServe
         seeded.events.append(OutputEvent(petID: navi.id, date: daysAgo(61),

@@ -195,8 +195,9 @@ struct SummarySheet: View {
         for episode in episodesInWindow {
             let status = episode.isActive ? "OPEN, day \(episode.durationDays)" : "resolved in \(episode.durationDays) days"
             lines.append("• \(shortDate(episode.start)) — \(episode.note) (\(status))")
-            if let kinds = episode.protocolKinds, !kinds.isEmpty {
-                lines.append("  Protocol: \(kinds.map { $0.label.lowercased() }.joined(separator: ", "))")
+            let tried = store.interventions(in: episode)
+            if !tried.isEmpty {
+                lines.append("  Tried: \(tried.map { $0.kind.label.lowercased() }.joined(separator: ", "))")
             }
         }
         if !suspectedTriggers.isEmpty {

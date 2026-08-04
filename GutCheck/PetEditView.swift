@@ -38,11 +38,6 @@ struct PetEditSheet: View {
                     Text("Comma-separated. Shown on vet summaries.")
                 }
                 Section {
-                    Toggle("Chronic — pin in watch mode", isOn: $pet.isChronic)
-                } footer: {
-                    Text("For animals whose episode never really closes. Watch mode stays on and resolution prompts are skipped.")
-                }
-                Section {
                     Button {
                         save()
                     } label: {
@@ -67,11 +62,6 @@ struct PetEditSheet: View {
             .split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
-        if pet.isChronic {
-            pet.mode = .chronic
-        } else if pet.mode == .chronic {
-            pet.mode = store.activeEpisode(for: pet.id) != nil ? .watch : .baseline
-        }
         store.updatePet(pet)
         dismiss()
     }
