@@ -20,6 +20,28 @@ extension PetMode {
     }
 }
 
+/// Circular profile photo when the pet has one, emoji avatar otherwise.
+struct PetAvatar: View {
+    @EnvironmentObject var store: AppStore
+    let pet: Pet
+    var size: CGFloat = 44
+
+    var body: some View {
+        if let filename = pet.photoFilename,
+           let image = UIImage(contentsOfFile: store.photoURL(filename).path) {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+                .frame(width: size, height: size)
+                .clipShape(Circle())
+        } else {
+            Text(pet.avatar)
+                .font(.system(size: size * 0.75))
+                .frame(width: size, height: size)
+        }
+    }
+}
+
 /// A selectable capture chip. Ordinal, sober — no emoji on the clinical scale.
 struct Chip: View {
     let label: String

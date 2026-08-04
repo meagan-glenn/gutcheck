@@ -90,8 +90,7 @@ struct PetCard: View {
     var body: some View {
         let episode = store.activeEpisode(for: pet.id)
         HStack(spacing: 14) {
-            Text(pet.avatar)
-                .font(.system(size: 38))
+            PetAvatar(pet: pet, size: 48)
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 8) {
                     Text(pet.name)

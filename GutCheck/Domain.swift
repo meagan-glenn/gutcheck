@@ -334,9 +334,10 @@ struct Pet: Identifiable, Codable, Equatable {
     var avatar: String // emoji avatar (avatars only — never on the clinical scale)
     var conditions: [String]
     var mode: PetMode
+    var photoFilename: String? // profile photo in Documents/photos; emoji fallback when nil
 
     init(id: UUID = UUID(), name: String, species: Species, breed: String, avatar: String,
-         conditions: [String] = [], mode: PetMode = .baseline) {
+         conditions: [String] = [], mode: PetMode = .baseline, photoFilename: String? = nil) {
         self.id = id
         self.name = name
         self.species = species
@@ -344,6 +345,7 @@ struct Pet: Identifiable, Codable, Equatable {
         self.avatar = avatar
         self.conditions = conditions
         self.mode = mode
+        self.photoFilename = photoFilename
     }
 }
 

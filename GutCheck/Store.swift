@@ -9,6 +9,7 @@ struct AppData: Codable {
     var crossFeeds: [CrossFeed] = []
     var episodes: [Episode] = []
     var exposures: [ExposureEvent] = []
+    var hasOnboarded: Bool = false
 
     init() {}
 
@@ -22,6 +23,8 @@ struct AppData: Codable {
         crossFeeds = try container.decodeIfPresent([CrossFeed].self, forKey: .crossFeeds) ?? []
         episodes = try container.decodeIfPresent([Episode].self, forKey: .episodes) ?? []
         exposures = try container.decodeIfPresent([ExposureEvent].self, forKey: .exposures) ?? []
+        // Files written before onboarding existed already have a household.
+        hasOnboarded = try container.decodeIfPresent(Bool.self, forKey: .hasOnboarded) ?? !pets.isEmpty
     }
 }
 
@@ -46,7 +49,7 @@ final class AppStore: ObservableObject {
            let decoded = try? JSONDecoder().decode(AppData.self, from: loaded) {
             data = decoded
         } else {
-            data = AppStore.seed()
+            data = AppData() // fresh install → onboarding
         }
     }
 
@@ -195,6 +198,14 @@ final class AppStore: ObservableObject {
         }
     }
 
+    func addPet(_ pet: Pet) {
+        data.pets.append(pet)
+    }
+
+    func completeOnboarding() {
+        data.hasOnboarded = true
+    }
+
     // MARK: - Unified timeline
 
     enum TimelineEntry: Identifiable {
@@ -275,6 +286,7 @@ final class AppStore: ObservableObject {
         let arya = Pet(name: "Arya", species: .dog, breed: "Border collie", avatar: "🐶")
 
         var seeded = AppData()
+        seeded.hasOnboarded = true
         seeded.pets = [navi, albus, arya]
 
         seeded.items = [

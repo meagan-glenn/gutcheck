@@ -6,9 +6,13 @@ When an animal gets sick, its owner becomes an amateur epidemiologist overnight 
 
 ## Screens
 
-| Home | Capture (4C) | Urgent breaks the layout |
+| Onboarding | Add an animal | Home |
 |---|---|---|
-| ![Home](docs/screenshots/home.png) | ![Capture](docs/screenshots/capture.png) | ![Urgent](docs/screenshots/capture-urgent.png) |
+| ![Onboarding](docs/screenshots/onboarding.png) | ![Add an animal](docs/screenshots/add-pet.png) | ![Home](docs/screenshots/home.png) |
+
+| Capture (4C) | Urgent breaks the layout |
+|---|---|
+| ![Capture](docs/screenshots/capture.png) | ![Urgent](docs/screenshots/capture-urgent.png) |
 
 | Pet timeline | Vet summary |
 |---|---|
@@ -25,7 +29,7 @@ When an animal gets sick, its owner becomes an amateur epidemiologist overnight 
 
 ## What's implemented
 
-Household home with per-pet status · 4C capture with photo attach (system picker; AI scoring stubbed as prefill-and-correct) · four-tier triage ladder with liquid-frequency escalation · episode state machine (baseline → watch → 3 consecutive normals → resolved) · one-tap interventions · 48-hour lookback · cross-feeding and med/stress exposure events · unified per-pet timeline · pet editing · shareable vet summary (30-day headline, suspected triggers ≤72h before onset, what was tried, flag log, questions-for-the-vet).
+First-run onboarding (searchable breed picker, profile photo upload, "just looking" demo household) · household home with per-pet status · 4C capture with photo attach (system picker; AI scoring stubbed as prefill-and-correct) · four-tier triage ladder with liquid-frequency escalation · episode state machine (baseline → watch → 3 consecutive normals → resolved) · one-tap interventions · 48-hour lookback · cross-feeding and med/stress exposure events · unified per-pet timeline · pet editing (photo, breed, conditions) · shareable vet summary (30-day headline, suspected triggers ≤72h before onset, what was tried, flag log, questions-for-the-vet).
 
 ## Scope cuts
 
@@ -35,7 +39,7 @@ The PRD specs more than this. Three features were built, then deliberately cut t
 - **The Insights tab.** The association engine's real distribution channel is the vet summary, where a professional interprets the correlations. A standalone insights screen is the most speculative surface in the app and the emptiest on day one.
 - **Chronic pinning** (a mode for animals whose episode never closes). Real need, edge persona — the kind of thing you add when a chronically-ill-dog owner asks for it.
 
-**Also not yet:** real AI photo scoring, PDF export, onboarding flow, household invites / second-opinion loop.
+**Also not yet:** real AI photo scoring, PDF export, household invites / second-opinion loop.
 
 ## Build & run
 

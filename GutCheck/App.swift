@@ -13,12 +13,18 @@ struct GutCheckApp: App {
 }
 
 struct RootView: View {
+    @EnvironmentObject var store: AppStore
+
     var body: some View {
-        TabView {
-            HomeView()
-                .tabItem { Label("Home", systemImage: "house.fill") }
-            HistoryView()
-                .tabItem { Label("Episodes", systemImage: "clock.arrow.circlepath") }
+        if store.data.hasOnboarded {
+            TabView {
+                HomeView()
+                    .tabItem { Label("Home", systemImage: "house.fill") }
+                HistoryView()
+                    .tabItem { Label("Episodes", systemImage: "clock.arrow.circlepath") }
+            }
+        } else {
+            OnboardingFlow()
         }
     }
 }

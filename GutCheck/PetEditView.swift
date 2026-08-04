@@ -1,14 +1,16 @@
 import SwiftUI
+import PhotosUI
 
-/// Edit what's going on with this animal: identity, conditions, chronic pin.
+/// Edit what's going on with this animal: identity, photo, conditions.
 struct PetEditSheet: View {
     @EnvironmentObject var store: AppStore
     @Environment(\.dismiss) private var dismiss
 
     @State var pet: Pet
     @State private var conditionsText: String
-
-    private let avatarOptions = ["🐕", "🦮", "🐶", "🐕‍🦺", "🐩", "🐺", "🐈", "🐈‍⬛"]
+    @State private var photoItem: PhotosPickerItem?
+    @State private var photoData: Data?
+    @State private var showBreedPicker = false
 
     init(pet: Pet) {
         _pet = State(initialValue: pet)
@@ -18,17 +20,58 @@ struct PetEditSheet: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    PhotosPicker(selection: $photoItem, matching: .images) {
+                        VStack(spacing: 8) {
+                            if let photoData, let image = UIImage(data: photoData) {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: 96, height: 96)
+                                    .clipShape(Circle())
+                            } else {
+                                PetAvatar(pet: pet, size: 96)
+                            }
+                            Label(pet.photoFilename == nil && photoData == nil ? "Add a photo" : "Change photo",
+                                  systemImage: "camera.fill")
+                                .font(.subheadline.weight(.medium))
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.plain)
+                    .listRowBackground(Color.clear)
+                }
+                .onChange(of: photoItem) { newItem in
+                    Task {
+                        photoData = try? await newItem?.loadTransferable(type: Data.self)
+                    }
+                }
                 Section("Basics") {
                     TextField("Name", text: $pet.name)
-                    TextField("Breed", text: $pet.breed)
-                    FlowLayout(spacing: 8) {
-                        ForEach(avatarOptions, id: \.self) { option in
-                            Chip(label: option, isSelected: pet.avatar == option, tint: .accentColor) {
-                                pet.avatar = option
-                            }
+                    Button {
+                        showBreedPicker = true
+                    } label: {
+                        HStack {
+                            Text("Breed")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Text(pet.breed.isEmpty ? "Choose" : pet.breed)
+                                .foregroundColor(pet.breed.isEmpty ? .secondary : .accentColor)
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
                     }
-                    .padding(.vertical, 4)
+                    if pet.photoFilename == nil && photoData == nil {
+                        FlowLayout(spacing: 8) {
+                            ForEach(pet.species.avatarOptions, id: \.self) { option in
+                                Chip(label: option, isSelected: pet.avatar == option, tint: .accentColor) {
+                                    pet.avatar = option
+                                }
+                            }
+                        }
+                        .padding(.vertical, 4)
+                    }
                 }
                 Section {
                     TextField("e.g. sensitive gut, seasonal allergies", text: $conditionsText)
@@ -54,6 +97,9 @@ struct PetEditSheet: View {
                     Button("Cancel") { dismiss() }
                 }
             }
+            .sheet(isPresented: $showBreedPicker) {
+                BreedPicker(species: pet.species, selection: $pet.breed)
+            }
         }
     }
 
@@ -62,6 +108,9 @@ struct PetEditSheet: View {
             .split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespaces) }
             .filter { !$0.isEmpty }
+        if let photoData {
+            pet.photoFilename = store.savePhoto(photoData)
+        }
         store.updatePet(pet)
         dismiss()
     }
