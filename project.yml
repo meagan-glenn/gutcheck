@@ -1,0 +1,24 @@
+name: GutCheck
+options:
+  bundleIdPrefix: com.meagan
+  deploymentTarget:
+    iOS: "16.4"
+  createIntermediateGroups: true
+targets:
+  GutCheck:
+    type: application
+    platform: iOS
+    sources:
+      - GutCheck
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.meagan.gutcheck
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1"
+        SWIFT_VERSION: "5.9"
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: "UIInterfaceOrientationPortrait"
+        INFOPLIST_KEY_CFBundleDisplayName: "Gut Check"
