@@ -29,7 +29,10 @@ struct HomeView: View {
 
                     HStack(spacing: 10) {
                         quickAction("Log output", symbol: "camera.fill") { showCapture = true }
-                        quickAction("Food theft", symbol: "fork.knife.circle") { showCrossFeed = true }
+                        // Food theft needs someone to steal from.
+                        if store.data.pets.count >= 2 {
+                            quickAction("Food theft", symbol: "fork.knife.circle") { showCrossFeed = true }
+                        }
                         quickAction("Med / stress", symbol: "pills.circle") { showExposure = true }
                     }
 
