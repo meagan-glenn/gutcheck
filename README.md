@@ -1,36 +1,46 @@
 # Gut Check
 
-The health record for a house full of animals. SwiftUI iOS app implementing PRD v0.3 MVP.
+**The health record for a house full of animals.** A native SwiftUI iOS app, built from [a full PRD](docs/PRD.md) — the product thinking came first, the code implements it.
+
+When an animal gets sick, its owner becomes an amateur epidemiologist overnight — tracing outputs back to inputs entirely from memory. Memory fails in predictable ways (stool lags intake by 12–36h; nobody records what "normal" looked like; last episode's fix is forgotten by the next one). Gut Check is the instrument: episode-based tracking across a multi-pet household, camera-first capture, and a vet-legible summary on demand.
+
+## Screens
+
+| Home | Capture (4C) | Urgent breaks the layout |
+|---|---|---|
+| ![Home](docs/screenshots/home.png) | ![Capture](docs/screenshots/capture.png) | ![Urgent](docs/screenshots/capture-urgent.png) |
+
+| Pet timeline | Vet summary | Cross-pet insights |
+|---|---|---|
+| ![Timeline](docs/screenshots/pet-timeline.png) | ![Summary](docs/screenshots/vet-summary.png) | ![Insights](docs/screenshots/insights.png) |
+
+## Product decisions worth noticing
+
+- **Episodes, not daily logs.** The central object is a bounded period of abnormality (baseline → watch → 3 consecutive normals → resolution). Healthy animals cost the user nothing; there is no streak to abandon.
+- **The 4Cs.** Consistency, Color, Coating, Contents as four independent axes — a perfectly formed stool can still be black and tarry. Owners tap a five-point plain-language scale ("soft serve"); the vet-standard 1–7 value is stored underneath.
+- **Urgent findings break the layout.** One-tap muscle memory is the point of capture — so when an axis hits the Urgent tier, the vet action becomes the primary button and plain save demotes to a text link.
+- **Multi-pet is the wedge.** Different diets under one roof make the household a natural control group; cross-feeding ("who ate whose food") is a first-class event no single-pet app can represent.
+- **Attribution handled honestly.** Protocols are recorded as bundles, narrowed across episodes by intersection, always framed as association — with counter-evidence shown. The app never diagnoses.
+- **Playfulness lives in the language, not the icons.** "Soft serve" is a label, not a 🍦. Nothing cute appears past the Monitor tier, and poop photos are blurred until deliberately tapped.
 
 ## What's implemented
 
-- **Home** — "Something's off" as the primary action, per-pet status cards with mode badges (baseline / watch / chronic), resolution progress dots, one-tap food-theft logging
-- **4C capture** (W2) — Consistency (5-point owner scale over stored 1–7 vet values, "Hard" demoted behind *more*), Color, Coating, Contents; live triage badge; mock AI prefill with tap-to-correct
-- **Triage ladder** (W11) — Normal / Monitor / Concern / Urgent; liquid ×3 in 24h escalates to Urgent; **Urgent breaks the layout** (vet action promoted, save demoted to a text link)
-- **Episode state machine** — baseline → watch → 3 consecutive normals → resolution prompt; chronic pets stay pinned in watch
-- **48-hour lookback** (W4) — new items, cross-feeding, recent outputs, "anything we missed?" chips
-- **Interventions & protocols** (W5) — one-tap intervention chips, protocol captured at resolution, **protocol replay** banner on the next episode
-- **Cross-feeding** — who ate whose, roughly how much; feeds lookback and insights
-- **Insights** (W7) — new-household-item correlation, cross-feed-precedes-episode, protocol narrowing across resolutions; counter-evidence shown; association-only language
-- Seed household: Navi (chronic gut, active episode + one resolved episode with a protocol), Juniper, Miso
+Household home with per-pet status · 4C capture with photo attach (system picker; AI scoring stubbed as prefill-and-correct) · four-tier triage ladder with liquid-frequency escalation · episode state machine with chronic pinning · one-tap interventions, protocol capture and replay · 48-hour lookback · cross-feeding and med/stress exposure events · association-only insights with counter-evidence · unified per-pet timeline · pet editing · shareable vet summary (30-day headline, suspected triggers ≤72h before onset, flag log, questions-for-the-vet).
 
-## Not yet built (stubs / next)
-
-Camera + real AI scoring (manual chips are the override path), vet summary PDF (W8), household invites / second opinion (W9), onboarding flow (W1), photo storage.
+**Not yet:** real AI photo scoring, PDF export, onboarding flow, household invites / second-opinion loop.
 
 ## Build & run
 
-Requires full Xcode (not just Command Line Tools).
+Requires Xcode with the iOS platform installed.
 
 ```bash
-# one-time, after installing Xcode from the App Store:
-sudo xcode-select -s /Applications/Xcode.app
-# then:
-open GutCheck.xcodeproj   # or build headlessly via xcodebuild
+brew install xcodegen   # once
+xcodegen generate
+open GutCheck.xcodeproj
 ```
 
-Project file is generated from `project.yml` with [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`xcodegen generate`).
+No dependencies — plain SwiftUI, iOS 16.4+, JSON persistence. The project file is generated from `project.yml`; domain logic (triage tiers, resolution counting) is UI-free in `GutCheck/Domain.swift` and unit-checked with the CLI toolchain alone.
 
-## Domain tests
+## Provenance
 
-Pure-Swift triage/resolution logic in `GutCheck/Domain.swift` is UI-free and testable with just the CLI toolchain — see the assertions run during development (17 checks: tier ladder, liquid escalation, axis independence, resolution counting).
+Spec'd in [PRD v0.3](docs/PRD.md) (problem → target user → core model → workflows → success metrics → risks), then built and iterated in-simulator with [Claude Code](https://claude.com/claude-code). PRD and product direction by Meagan Glenn.
