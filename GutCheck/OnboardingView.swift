@@ -74,7 +74,7 @@ struct OnboardingFlow: View {
                         Button {
                             store.completeOnboarding()
                         } label: {
-                            Text("That's the household — let's go")
+                            Text("That's the household, let's go")
                                 .font(.headline)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 8)

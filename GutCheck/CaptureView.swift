@@ -87,7 +87,7 @@ struct CaptureSheet: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Photo attached")
                                     .font(.subheadline.weight(.semibold))
-                                Text("AI scored all four axes — tap any chip to correct")
+                                Text("AI scored all four axes. Tap any chip to correct")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -109,7 +109,7 @@ struct CaptureSheet: View {
                                 Text("Snap a photo")
                                     .font(.subheadline.weight(.semibold))
                                     .foregroundColor(.primary)
-                                Text("AI prefills all four axes from the photo — or skip it and tap chips below")
+                                Text("AI prefills all four axes from the photo, or skip it and tap chips below")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -211,7 +211,7 @@ struct CaptureSheet: View {
             .padding()
         }
         .confirmationDialog("Open watch mode?", isPresented: $showWatchPrompt, titleVisibility: .visible) {
-            Button("Yes — start watching") {
+            Button("Yes, start watching") {
                 if let petID = petID {
                     store.startEpisode(petID: petID, note: "Abnormal output logged")
                     lookbackPetID = petID
@@ -263,7 +263,7 @@ struct CaptureSheet: View {
             Button {
                 save()
             } label: {
-                Text("Looks right — save")
+                Text("Looks right, save it")
                     .font(.headline)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 6)

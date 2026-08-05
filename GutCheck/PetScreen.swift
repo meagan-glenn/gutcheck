@@ -112,7 +112,7 @@ struct PetScreen: View {
     private var baselineCard: some View {
         let pet = store.pet(petID)
         return VStack(alignment: .leading, spacing: 6) {
-            Label("Baseline — all quiet", systemImage: "moon.zzz.fill")
+            Label("Baseline: all quiet", systemImage: "moon.zzz.fill")
                 .font(.headline)
                 .foregroundColor(.secondary)
             Text("Every log quietly builds \(pet?.name ?? "their") normal for the day it matters.")
@@ -134,7 +134,7 @@ struct PetScreen: View {
             let noteSuffix = medExposure.note.isEmpty ? "" : " (\(medExposure.note))"
             let phrase = medExposure.kind == .medStarted ? "starting a med" : "a med change"
             Label {
-                Text("This began \(hoursBetween(medExposure.date, episode.start))h after \(phrase)\(noteSuffix). That timing is common with med changes — worth mentioning to your vet.")
+                Text("This began \(hoursBetween(medExposure.date, episode.start))h after \(phrase)\(noteSuffix). That timing is common with med changes and worth mentioning to your vet.")
                     .font(.subheadline)
             } icon: {
                 Image(systemName: "pills.fill")
@@ -192,7 +192,7 @@ struct PetScreen: View {
                     .frame(maxWidth: .infinity)
             }
             .confirmationDialog("End this episode?", isPresented: $showEndEpisodeConfirm, titleVisibility: .visible) {
-                Button("End it — back to baseline") {
+                Button("End it, back to baseline") {
                     store.resolveEpisode(episode)
                 }
                 Button("Keep watching", role: .cancel) {}

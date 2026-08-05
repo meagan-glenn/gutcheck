@@ -202,7 +202,7 @@ struct PetCard: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 } else {
-                    Text("All quiet — a first log starts their baseline")
+                    Text("All quiet. A first log starts their baseline")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }

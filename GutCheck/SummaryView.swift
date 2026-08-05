@@ -176,7 +176,7 @@ struct SummarySheet: View {
         for episode in episodesInWindow {
             if let med = store.medExposureBefore(episode) {
                 let name = med.note.isEmpty ? "a recent med change" : med.note
-                questions.append("Symptoms began ~\(hoursBetween(med.date, episode.start))h after \(name) — could they be related?")
+                questions.append("Symptoms began ~\(hoursBetween(med.date, episode.start))h after \(name). Could they be related?")
             }
         }
         if !suspectedTriggers.isEmpty {
@@ -197,7 +197,7 @@ struct SummarySheet: View {
         let signalment = [(pet?.breed.isEmpty == false) ? pet?.breed : nil, pet?.ageLabel]
             .compactMap { $0 }
             .joined(separator: ", ")
-        lines.append("GUT CHECK — \(pet?.name ?? "")\(signalment.isEmpty ? "" : " (\(signalment))"), last \(windowDays) days")
+        lines.append("GUT CHECK: \(pet?.name ?? "")\(signalment.isEmpty ? "" : " (\(signalment))"), last \(windowDays) days")
         lines.append("\(episodesInWindow.count) episode(s) · \(normals) of \(outputs.count) logged stools normal")
         if let pet = pet, !pet.conditions.isEmpty {
             lines.append("Known conditions: \(pet.conditions.joined(separator: ", "))")
@@ -205,7 +205,7 @@ struct SummarySheet: View {
         lines.append("")
         for episode in episodesInWindow {
             let status = episode.isActive ? "OPEN, day \(episode.durationDays)" : "resolved in \(episode.durationDays) days"
-            lines.append("• \(shortDate(episode.start)) — \(episode.note) (\(status))")
+            lines.append("• \(shortDate(episode.start)) · \(episode.note) (\(status))")
             let tried = store.interventions(in: episode)
             if !tried.isEmpty {
                 lines.append("  Tried: \(tried.map { $0.kind.label.lowercased() }.joined(separator: ", "))")
@@ -220,7 +220,7 @@ struct SummarySheet: View {
             lines.append("")
             lines.append("Flag log:")
             for event in flagLog {
-                lines.append("• \(shortDateTime(event.date)) — \(event.reading.consistency.label) (vet score \(event.reading.consistency.vetScore)), \(event.reading.color.label), tier \(event.tier.label)")
+                lines.append("• \(shortDateTime(event.date)) · \(event.reading.consistency.label) (vet score \(event.reading.consistency.vetScore)), \(event.reading.color.label), tier \(event.tier.label)")
             }
         }
         lines.append("")

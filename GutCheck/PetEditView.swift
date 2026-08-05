@@ -117,7 +117,7 @@ struct PetEditSheet: View {
                 BreedPicker(species: pet.species, selection: $pet.breed)
             }
             .confirmationDialog("Remove \(pet.name) from the household?", isPresented: $showArchiveConfirm, titleVisibility: .visible) {
-                Button("Remove — keep the history", role: .destructive) {
+                Button("Remove, keep the history", role: .destructive) {
                     store.archivePet(pet.id)
                     dismiss()
                 }

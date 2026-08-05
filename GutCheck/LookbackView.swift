@@ -20,7 +20,7 @@ struct LookbackView: View {
 
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                Text("Stool reflects intake from 12–36 hours ago — here's everything from \(petName)'s window.")
+                Text("Stool reflects intake from 12 to 36 hours ago. Here's everything from \(petName)'s window.")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
 
@@ -49,7 +49,7 @@ struct LookbackView: View {
                         HStack {
                             Image(systemName: "fork.knife.circle.fill")
                                 .foregroundColor(Tier.concern.color)
-                            Text("\(store.pet(feed.eaterID)?.name ?? "?") ate \(store.pet(feed.foodOwnerID)?.name ?? "?")'s food (\(feed.amount)) — \(relativeDay(feed.date))")
+                            Text("\(store.pet(feed.eaterID)?.name ?? "?") ate \(store.pet(feed.foodOwnerID)?.name ?? "?")'s food (\(feed.amount)) · \(relativeDay(feed.date))")
                                 .font(.subheadline)
                             Spacer()
                         }
@@ -91,7 +91,7 @@ struct LookbackView: View {
                 Button {
                     onDone()
                 } label: {
-                    Text("Done — start watching")
+                    Text("Done, start watching")
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 6)

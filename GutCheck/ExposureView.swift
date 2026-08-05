@@ -25,7 +25,7 @@ struct ExposureSheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
-                    Text("Meds and stress change outputs too. Log it now — the lookback remembers so you don't have to.")
+                    Text("Meds and stress change outputs too. Log it now, and the lookback remembers so you don't have to.")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
 
@@ -128,7 +128,7 @@ struct ExposureRow: View {
                 .foregroundColor(exposure.kind.isMedication ? Tier.concern.color : Color(red: 0.48, green: 0.35, blue: 0.72))
                 .frame(width: 24)
             VStack(alignment: .leading, spacing: 2) {
-                Text(exposure.kind.label + (exposure.note.isEmpty ? "" : " — \(exposure.note)"))
+                Text(exposure.kind.label + (exposure.note.isEmpty ? "" : " · \(exposure.note)"))
                     .font(.subheadline)
                 Text("\(subject) · \(relativeDay(exposure.date))")
                     .font(.caption)

@@ -12,7 +12,7 @@ struct HistoryView: View {
                             .filter { $0.petID == pet.id }
                             .sorted { $0.start > $1.start }
                         if !episodes.isEmpty {
-                            SectionHeader(title: "\(pet.name)\(pet.isArchived ? " (archived)" : "") — \(episodes.count) episode\(episodes.count == 1 ? "" : "s")")
+                            SectionHeader(title: "\(pet.name)\(pet.isArchived ? " (archived)" : "") · \(episodes.count) episode\(episodes.count == 1 ? "" : "s")")
                             ForEach(episodes) { episode in
                                 EpisodeCard(episode: episode)
                             }
