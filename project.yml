@@ -9,7 +9,18 @@ targets:
     type: application
     platform: iOS
     sources:
-      - GutCheck
+      # Secrets.plist is excluded so the committed xcodeproj never references
+      # it; the post-build script bundles it only when present locally.
+      - path: GutCheck
+        excludes:
+          - "Secrets.plist"
+    postBuildScripts:
+      - name: Copy Secrets.plist (optional, local only)
+        script: |
+          if [ -f "$SRCROOT/GutCheck/Secrets.plist" ]; then
+            cp "$SRCROOT/GutCheck/Secrets.plist" "$CODESIGNING_FOLDER_PATH/Secrets.plist"
+          fi
+        basedOnDependencyAnalysis: false
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES

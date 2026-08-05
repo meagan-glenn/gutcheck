@@ -12,3 +12,4 @@ xcuserdata/
 
 # macOS
 .DS_Store
+GutCheck/Secrets.plist

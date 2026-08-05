@@ -1,12 +1,20 @@
 import SwiftUI
 import PhotosUI
 
-/// W2 — Log an output. Camera is stubbed (simulator has no camera; the PRD's
-/// manual-override path is the whole flow for now). AI suggestion is mocked as
-/// a prefilled normal reading — the user corrects, which is the real interaction.
+/// W2 — Log an output. Camera opens the system photo picker (the simulator has
+/// no camera). With an API key configured, Claude scores the photo and prefills
+/// the four axes; the owner corrects. Without one, capture is fully manual.
 struct CaptureSheet: View {
     @EnvironmentObject var store: AppStore
     @Environment(\.dismiss) private var dismiss
+
+    enum AIState: Equatable {
+        case idle
+        case scoring
+        case scored(uncertain: [String])
+        case notStool
+        case failed
+    }
 
     @State var petID: UUID?
     @State private var reading: StoolReading = .normal
@@ -14,6 +22,7 @@ struct CaptureSheet: View {
     @State private var note = ""
     @State private var photoItem: PhotosPickerItem?
     @State private var photoData: Data?
+    @State private var aiState: AIState = .idle
     @State private var showMoreConsistency = false
     @State private var showMoreColors = false
     @State private var savedResult: LogResult?
@@ -87,13 +96,17 @@ struct CaptureSheet: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("Photo attached")
                                     .font(.subheadline.weight(.semibold))
-                                Text("AI scored all four axes. Tap any chip to correct")
+                                Text(photoSubtitle)
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
                             Spacer()
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                                .foregroundColor(.secondary)
+                            if aiState == .scoring {
+                                ProgressView()
+                            } else {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                                    .foregroundColor(.secondary)
+                            }
                         }
                         .padding(12)
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -109,7 +122,9 @@ struct CaptureSheet: View {
                                 Text("Snap a photo")
                                     .font(.subheadline.weight(.semibold))
                                     .foregroundColor(.primary)
-                                Text("AI prefills all four axes from the photo, or skip it and tap chips below")
+                                Text(AIScorer.isConfigured
+                                     ? "AI prefills all four axes from the photo, or skip it and tap chips below"
+                                     : "Attach it to the record, then score with the chips below")
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                             }
@@ -125,6 +140,7 @@ struct CaptureSheet: View {
                     guard let item = item else { return }
                     Task { @MainActor in
                         photoData = try? await item.loadTransferable(type: Data.self)
+                        scorePhoto()
                     }
                 }
 
@@ -270,6 +286,45 @@ struct CaptureSheet: View {
             }
             .buttonStyle(.borderedProminent)
             .tint(liveTier == .normal ? Tier.normal.color : liveTier.color)
+        }
+    }
+
+    private var photoSubtitle: String {
+        switch aiState {
+        case .idle:
+            return AIScorer.isConfigured ? "Tap to change" : "On the record. Score with the chips below"
+        case .scoring:
+            return "Scoring the photo…"
+        case .scored(let uncertain) where uncertain.isEmpty:
+            return "AI prefilled all four axes. Tap any chip to correct"
+        case .scored(let uncertain):
+            return "AI prefilled the axes. Double-check \(uncertain.joined(separator: " and "))"
+        case .notStool:
+            return "That doesn't look like a stool photo. Score with the chips below"
+        case .failed:
+            return "AI scoring didn't work this time. Score with the chips below"
+        }
+    }
+
+    /// The model proposes, the owner disposes: scores prefill the chips but
+    /// the human can override every axis before anything is saved.
+    private func scorePhoto() {
+        guard AIScorer.isConfigured, let data = photoData else { return }
+        aiState = .scoring
+        Task { @MainActor in
+            do {
+                let score = try await AIScorer.score(data)
+                if score.isStool {
+                    reading = score.reading
+                    if score.reading.consistency == .hard { showMoreConsistency = true }
+                    if StoolColor.secondary.contains(score.reading.color) { showMoreColors = true }
+                    aiState = .scored(uncertain: score.uncertainAxes)
+                } else {
+                    aiState = .notStool
+                }
+            } catch {
+                aiState = .failed
+            }
         }
     }
 

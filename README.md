@@ -29,7 +29,7 @@ When an animal gets sick, its owner becomes an amateur epidemiologist overnight 
 
 ## What's implemented
 
-First-run onboarding (searchable breed picker, profile photo upload, "just looking" demo household) · household home with per-pet status, add-an-animal any time · 4C capture with photo attach (system picker; AI scoring stubbed as prefill-and-correct) and backdated logging ("just now / earlier today / yesterday" — the causal windows need honest timestamps) · four-tier triage ladder with liquid-frequency escalation · episode state machine (baseline → watch → 3 consecutive normals → resolved) with a manual end-episode escape hatch · one-tap interventions · 48-hour lookback · cross-feeding and med/stress exposure events · unified per-pet timeline with long-press delete (mis-logs must be fixable — they feed triage and the vet summary) · pet editing (photo, breed, birthday, conditions) · archive/restore animals (history kept) · shareable vet summary (30-day headline with age, suspected triggers ≤72h before onset, what was tried, flag log, questions-for-the-vet).
+First-run onboarding (searchable breed picker, profile photo upload, "just looking" demo household) · household home with per-pet status, add-an-animal any time · 4C capture with photo attach (system picker) and real AI photo scoring via Claude (see below) and backdated logging ("just now / earlier today / yesterday" — the causal windows need honest timestamps) · four-tier triage ladder with liquid-frequency escalation · episode state machine (baseline → watch → 3 consecutive normals → resolved) with a manual end-episode escape hatch · one-tap interventions · 48-hour lookback · cross-feeding and med/stress exposure events · unified per-pet timeline with long-press delete (mis-logs must be fixable — they feed triage and the vet summary) · pet editing (photo, breed, birthday, conditions) · archive/restore animals (history kept) · shareable vet summary (30-day headline with age, suspected triggers ≤72h before onset, what was tried, flag log, questions-for-the-vet).
 
 ## Scope cuts
 
@@ -39,7 +39,31 @@ The PRD specs more than this. Three features were built, then deliberately cut t
 - **The Insights tab.** The association engine's real distribution channel is the vet summary, where a professional interprets the correlations. A standalone insights screen is the most speculative surface in the app and the emptiest on day one.
 - **Chronic pinning** (a mode for animals whose episode never closes). Real need, edge persona — the kind of thing you add when a chronically-ill-dog owner asks for it.
 
-**Also not yet:** real AI photo scoring, PDF export, household invites / second-opinion loop.
+**Also not yet:** PDF export, household invites / second-opinion loop, a backend proxy for the AI call.
+
+## AI photo scoring
+
+Attach a photo in capture and Claude (`claude-sonnet-5`, vision) scores all four axes and prefills the chips. Design choices worth noticing:
+
+- **The model proposes, the owner disposes.** Scores prefill the chips; the human can override every axis before saving, and the stored record is always owner-confirmed. The AI never writes to the record directly, which is how the no-diagnosis principle survives adding a model.
+- **Structured output, not parsed prose.** The request forces a strict tool call whose schema enums match the app's `Codable` raw values exactly, so a malformed response is impossible rather than parsed hopefully.
+- **Honest abstention.** The model returns `unscorable` per axis when the photo doesn't support a judgment, and low-confidence axes are flagged as "double-check" in the UI. A non-stool photo is called out instead of scored.
+- **Graceful degradation.** No API key means the copy changes and capture is fully manual. Nothing breaks for repo cloners.
+
+To enable it locally, create `GutCheck/Secrets.plist` (gitignored, bundled by an optional build step, never referenced by the committed project):
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>ANTHROPIC_API_KEY</key>
+    <string>sk-ant-your-key-here</string>
+</dict>
+</plist>
+```
+
+A key in the app bundle is a local-development convenience; shipping this for real means a small backend proxy holding the key server-side.
 
 ## Build & run
 
