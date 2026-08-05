@@ -6,6 +6,7 @@ struct HomeView: View {
     @State private var showCapture = false
     @State private var showCrossFeed = false
     @State private var showExposure = false
+    @State private var showAddPet = false
 
     var body: some View {
         NavigationStack {
@@ -46,6 +47,25 @@ struct HomeView: View {
                         }
                         .buttonStyle(.plain)
                     }
+
+                    Button {
+                        showAddPet = true
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "plus.circle.fill")
+                            Text("Add an animal")
+                                .font(.subheadline.weight(.semibold))
+                        }
+                        .foregroundColor(.accentColor)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .strokeBorder(Color.secondary.opacity(0.35),
+                                              style: StrokeStyle(lineWidth: 1.5, dash: [6, 5]))
+                        )
+                    }
+                    .buttonStyle(.plain)
                 }
                 .padding()
             }
@@ -61,6 +81,9 @@ struct HomeView: View {
             }
             .sheet(isPresented: $showExposure) {
                 ExposureSheet()
+            }
+            .sheet(isPresented: $showAddPet) {
+                AddPetSheet()
             }
         }
     }
