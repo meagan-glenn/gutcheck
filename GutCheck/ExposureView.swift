@@ -48,7 +48,7 @@ struct ExposureSheet: View {
                         }
                     }
 
-                    TextField("Optional note — e.g. amoxicillin, fireworks", text: $note)
+                    TextField("Note", text: $note)
                         .textFieldStyle(.roundedBorder)
 
                     Button {
