@@ -48,8 +48,7 @@ struct ExposureSheet: View {
                         }
                     }
 
-                    TextField("Note", text: $note)
-                        .textFieldStyle(.roundedBorder)
+                    PillTextField(placeholder: "Note", text: $note)
 
                     Button {
                         guard let kind = kind else { return }

@@ -190,8 +190,7 @@ struct CaptureSheet: View {
                     }
                 }
 
-                TextField("Optional note", text: $note)
-                    .textFieldStyle(.roundedBorder)
+                PillTextField(placeholder: "Note", text: $note)
 
                 saveArea
             }

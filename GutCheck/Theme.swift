@@ -80,6 +80,19 @@ struct TierBadge: View {
     }
 }
 
+/// Note field shaped like the chips it lives among.
+struct PillTextField: View {
+    let placeholder: String
+    @Binding var text: String
+
+    var body: some View {
+        TextField(placeholder, text: $text)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 9)
+            .background(Capsule().fill(Color(.secondarySystemBackground)))
+    }
+}
+
 struct SectionHeader: View {
     let title: String
 
