@@ -197,7 +197,7 @@ struct SummarySheet: View {
         let signalment = [(pet?.breed.isEmpty == false) ? pet?.breed : nil, pet?.ageLabel]
             .compactMap { $0 }
             .joined(separator: ", ")
-        lines.append("GUT CHECK: \(pet?.name ?? "")\(signalment.isEmpty ? "" : " (\(signalment))"), last \(windowDays) days")
+        lines.append("SCOOP: \(pet?.name ?? "")\(signalment.isEmpty ? "" : " (\(signalment))"), last \(windowDays) days")
         lines.append("\(episodesInWindow.count) episode(s) · \(normals) of \(outputs.count) logged stools normal")
         if let pet = pet, !pet.conditions.isEmpty {
             lines.append("Known conditions: \(pet.conditions.joined(separator: ", "))")
@@ -227,7 +227,7 @@ struct SummarySheet: View {
         lines.append("Questions:")
         for question in vetQuestions { lines.append("• \(question)") }
         lines.append("")
-        lines.append("Owner-logged observations via Gut Check. Not a diagnosis.")
+        lines.append("Owner-logged observations via Scoop. Not a diagnosis.")
         return lines.joined(separator: "\n")
     }
 }

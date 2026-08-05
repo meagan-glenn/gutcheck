@@ -14,7 +14,7 @@ struct OnboardingFlow: View {
 
                 Text("🐕  🐈  🦮")
                     .font(.system(size: 44))
-                Text("Gut Check")
+                Text("Scoop")
                     .font(.largeTitle.weight(.bold))
                 Text("The health record for a house full of animals. Log what comes out, catch what caused it, and hand your vet a summary that makes sense.")
                     .font(.subheadline)

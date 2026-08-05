@@ -69,7 +69,7 @@ struct HomeView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Gut Check")
+            .navigationTitle("Scoop")
             // Firm but calm, anchored in the thumb zone. Brand indigo, not
             // alarm orange — the alarm state belongs to the pet cards.
             .safeAreaInset(edge: .bottom) {

@@ -1,8 +1,8 @@
-# Gut Check
+# Scoop
 
-**The health record for a house full of animals.** A native SwiftUI iOS app, built from [a full PRD](docs/PRD.md) — the product thinking came first, the code implements it.
+**The health record for a house full of animals.** A native SwiftUI iOS app, built from [a full PRD](docs/PRD.md) — the product thinking came first, the code implements it. (Worked under the name Gut Check, hence the repo; renamed Scoop after checking the App Store field: nine existing "Gut Check" apps, all human IBS trackers, zero pet apps named Scoop.)
 
-When an animal gets sick, its owner becomes an amateur epidemiologist overnight — tracing outputs back to inputs entirely from memory. Memory fails in predictable ways (stool lags intake by 12–36h; nobody records what "normal" looked like; last episode's fix is forgotten by the next one). Gut Check is the instrument: episode-based tracking across a multi-pet household, camera-first capture, and a vet-legible summary on demand.
+When an animal gets sick, its owner becomes an amateur epidemiologist overnight — tracing outputs back to inputs entirely from memory. Memory fails in predictable ways (stool lags intake by 12–36h; nobody records what "normal" looked like; last episode's fix is forgotten by the next one). Scoop is the instrument: episode-based tracking across a multi-pet household, camera-first capture, and a vet-legible summary on demand.
 
 ## Screens
 

@@ -10,6 +10,7 @@
 		06C431C40892AB6BFBFF4C19 /* PetScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65DF898CEFE63C8E710E458E /* PetScreen.swift */; };
 		0CEDD21181B0C61106BFF842 /* PetEditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05B6887D59C555216027ACF4 /* PetEditView.swift */; };
 		2B19DED9E13DE7E07B8A275A /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4310DA157945EED9A6B0CBD /* SummaryView.swift */; };
+		3CE4D6ABD5529ADF77C2E0E9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB6EA9A8BC10FD3514AB54B2 /* Assets.xcassets */; };
 		46ED080FDA326931A99A049D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C43088D0E1D620D7BB33DD /* HomeView.swift */; };
 		57F9E7FA0E4EA01C610837D1 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E41E7F0E7076C34A9D4DB42 /* App.swift */; };
 		654C9362AB39E028E1035DAC /* ExposureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B16B7E22D869F11E21A3F7 /* ExposureView.swift */; };
@@ -37,6 +38,7 @@
 		C8C43088D0E1D620D7BB33DD /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		D4310DA157945EED9A6B0CBD /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
 		E78199832FC64C3A70E1470A /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		EB6EA9A8BC10FD3514AB54B2 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -52,6 +54,7 @@
 			isa = PBXGroup;
 			children = (
 				2E41E7F0E7076C34A9D4DB42 /* App.swift */,
+				EB6EA9A8BC10FD3514AB54B2 /* Assets.xcassets */,
 				3A090BCE70EB346758E9D6F5 /* CaptureView.swift */,
 				64F3F7188AF5F7B5A1FB6C15 /* Domain.swift */,
 				14B16B7E22D869F11E21A3F7 /* ExposureView.swift */,
@@ -84,6 +87,7 @@
 			buildConfigurationList = 30B2F89490D820D9ECAF4DBC /* Build configuration list for PBXNativeTarget "GutCheck" */;
 			buildPhases = (
 				FCA226405E48334C82B1BD37 /* Sources */,
+				2CA83DFF7D4A3E2ED92F9EF0 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -126,6 +130,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		2CA83DFF7D4A3E2ED92F9EF0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3CE4D6ABD5529ADF77C2E0E9 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		FCA226405E48334C82B1BD37 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -157,7 +172,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Gut Check";
+				INFOPLIST_KEY_CFBundleDisplayName = Scoop;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -299,7 +314,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = "Gut Check";
+				INFOPLIST_KEY_CFBundleDisplayName = Scoop;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
