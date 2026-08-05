@@ -39,7 +39,7 @@ The PRD specs more than this. Three features were built, then deliberately cut t
 - **The Insights tab.** The association engine's real distribution channel is the vet summary, where a professional interprets the correlations. A standalone insights screen is the most speculative surface in the app and the emptiest on day one.
 - **Chronic pinning** (a mode for animals whose episode never closes). Real need, edge persona — the kind of thing you add when a chronically-ill-dog owner asks for it.
 
-**Also not yet:** PDF export, household invites / second-opinion loop, a backend proxy for the AI call.
+**Also not yet:** PDF export, household invites / second-opinion loop, a backend proxy for the AI call, and an AI pattern-spotting layer in the vet summary (designed but unbuilt; see "Where the AI deliberately isn't" below).
 
 ## AI photo scoring
 
@@ -64,6 +64,16 @@ To enable it locally, create `GutCheck/Secrets.plist` (gitignored, bundled by an
 ```
 
 A key in the app bundle is a local-development convenience; shipping this for real means a small backend proxy holding the key server-side.
+
+## Where the AI deliberately isn't
+
+The vet summary has no prompt. Every line of it is computed: the headline counts are arithmetic over the 30-day window, the "preceded episodes by ≤72h" list is date math over logged exposures and cross-feeds, and even the questions for the vet are template strings filled from matched events. That's a decision, not a gap:
+
+- **The summary is the document a vet acts on.** It's the last place you want generative variability. A deterministic summary is auditable: every sentence traces to a logged event, and nothing can be invented.
+- **The dangerous failure isn't fabrication, it's soft inference.** A model summarizing "ate another pet's food 30h before onset" will drift toward "likely dietary indiscretion." Nothing was made up, but an association became a causal claim under the app's name. Keeping the summary deterministic enforces the no-diagnosis promise structurally instead of asking a prompt to hold the line.
+- **So AI sits at the noisy input end** (photo scoring, where a human reviews every proposal before saving) **and stays out of the clinical output end** (the summary, which only aggregates what the owner confirmed).
+
+There is a caged V2 design for AI in the summary, deliberately not built yet: a separate "patterns you might ask about" layer that reads the structured event log, returns observations via a strict tool call where each one must cite the event IDs supporting it (uncited observations are dropped in code before rendering), and renders visibly fenced off from the factual record, phrased as questions. It's unbuilt for the same reason protocol replay was cut: pattern-spotting across episodes has nothing to say until a user has multiple episodes, and a day-one summary would render an empty AI section. Strongest V2 pairing: replay says "this worked last time," patterns say "this preceded it last time."
 
 ## Build & run
 
