@@ -15,6 +15,11 @@ struct ExposureSheet: View {
     private let stressKinds: [ExposureKind] = [.travelBoarding, .houseGuests, .stressfulEvent]
     private let intakeKinds: [ExposureKind] = [.foundOutside, .tableFood, .newChew]
 
+    /// With one animal there's no "who" to ask — everything is theirs.
+    private var soloPet: Pet? {
+        store.data.pets.count == 1 ? store.data.pets.first : nil
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -27,16 +32,18 @@ struct ExposureSheet: View {
                     kindGroup(title: "Stress & routine", kinds: stressKinds)
                     kindGroup(title: "Intake", kinds: intakeKinds)
 
-                    SectionHeader(title: "Who?")
-                    FlowLayout(spacing: 8) {
-                        Chip(label: "Whole household", isSelected: wholeHousehold, tint: .accentColor) {
-                            wholeHousehold = true
-                            petID = nil
-                        }
-                        ForEach(store.data.pets) { pet in
-                            Chip(label: "\(pet.avatar) \(pet.name)", isSelected: petID == pet.id, tint: .accentColor) {
-                                petID = pet.id
-                                wholeHousehold = false
+                    if soloPet == nil {
+                        SectionHeader(title: "Who?")
+                        FlowLayout(spacing: 8) {
+                            Chip(label: "Whole household", isSelected: wholeHousehold, tint: .accentColor) {
+                                wholeHousehold = true
+                                petID = nil
+                            }
+                            ForEach(store.data.pets) { pet in
+                                Chip(label: "\(pet.avatar) \(pet.name)", isSelected: petID == pet.id, tint: .accentColor) {
+                                    petID = pet.id
+                                    wholeHousehold = false
+                                }
                             }
                         }
                     }
@@ -46,7 +53,8 @@ struct ExposureSheet: View {
 
                     Button {
                         guard let kind = kind else { return }
-                        store.logExposure(kind: kind, petID: wholeHousehold ? nil : petID, note: note)
+                        let target = soloPet?.id ?? (wholeHousehold ? nil : petID)
+                        store.logExposure(kind: kind, petID: target, note: note)
                         dismiss()
                     } label: {
                         Text("Log it")
@@ -55,7 +63,7 @@ struct ExposureSheet: View {
                             .padding(.vertical, 6)
                     }
                     .buttonStyle(.borderedProminent)
-                    .disabled(kind == nil || (!wholeHousehold && petID == nil))
+                    .disabled(kind == nil || (soloPet == nil && !wholeHousehold && petID == nil))
                 }
                 .padding()
             }
