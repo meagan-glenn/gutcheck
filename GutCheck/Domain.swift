@@ -335,9 +335,11 @@ struct Pet: Identifiable, Codable, Equatable {
     var conditions: [String]
     var mode: PetMode
     var photoFilename: String? // profile photo in Documents/photos; emoji fallback when nil
+    var birthdate: Date?
 
     init(id: UUID = UUID(), name: String, species: Species, breed: String, avatar: String,
-         conditions: [String] = [], mode: PetMode = .baseline, photoFilename: String? = nil) {
+         conditions: [String] = [], mode: PetMode = .baseline, photoFilename: String? = nil,
+         birthdate: Date? = nil) {
         self.id = id
         self.name = name
         self.species = species
@@ -346,6 +348,16 @@ struct Pet: Identifiable, Codable, Equatable {
         self.conditions = conditions
         self.mode = mode
         self.photoFilename = photoFilename
+        self.birthdate = birthdate
+    }
+
+    /// "8 mo" / "4 yrs" — age is what the vet actually asks for.
+    var ageLabel: String? {
+        guard let birthdate else { return nil }
+        let months = max(0, Calendar.current.dateComponents([.month], from: birthdate, to: Date()).month ?? 0)
+        if months < 12 { return "\(months) mo" }
+        let years = months / 12
+        return "\(years) yr\(years == 1 ? "" : "s")"
     }
 }
 

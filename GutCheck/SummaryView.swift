@@ -84,9 +84,17 @@ struct SummarySheet: View {
         let pet = store.pet(petID)
         let outputs = outputsInWindow
         let normals = outputs.filter { $0.tier == .normal }.count
+        let signalment = [pet?.ageLabel, (pet?.breed.isEmpty == false) ? pet?.breed : nil]
+            .compactMap { $0 }
+            .joined(separator: " · ")
         return VStack(alignment: .leading, spacing: 4) {
             Text("\(pet?.name ?? ""), last \(windowDays) days")
                 .font(.title3.weight(.bold))
+            if !signalment.isEmpty {
+                Text(signalment)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
             Text("\(episodesInWindow.count) episode\(episodesInWindow.count == 1 ? "" : "s") · \(normals) of \(outputs.count) logged stools normal")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -186,7 +194,10 @@ struct SummarySheet: View {
         let outputs = outputsInWindow
         let normals = outputs.filter { $0.tier == .normal }.count
         var lines: [String] = []
-        lines.append("GUT CHECK — \(pet?.name ?? "") (\(pet?.breed ?? "")), last \(windowDays) days")
+        let signalment = [(pet?.breed.isEmpty == false) ? pet?.breed : nil, pet?.ageLabel]
+            .compactMap { $0 }
+            .joined(separator: ", ")
+        lines.append("GUT CHECK — \(pet?.name ?? "")\(signalment.isEmpty ? "" : " (\(signalment))"), last \(windowDays) days")
         lines.append("\(episodesInWindow.count) episode(s) · \(normals) of \(outputs.count) logged stools normal")
         if let pet = pet, !pet.conditions.isEmpty {
             lines.append("Known conditions: \(pet.conditions.joined(separator: ", "))")

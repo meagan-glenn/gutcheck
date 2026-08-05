@@ -11,10 +11,14 @@ struct PetEditSheet: View {
     @State private var photoItem: PhotosPickerItem?
     @State private var photoData: Data?
     @State private var showBreedPicker = false
+    @State private var hasBirthday: Bool
+    @State private var birthdate: Date
 
     init(pet: Pet) {
         _pet = State(initialValue: pet)
         _conditionsText = State(initialValue: pet.conditions.joined(separator: ", "))
+        _hasBirthday = State(initialValue: pet.birthdate != nil)
+        _birthdate = State(initialValue: pet.birthdate ?? Date())
     }
 
     var body: some View {
@@ -62,6 +66,7 @@ struct PetEditSheet: View {
                                 .foregroundColor(.secondary)
                         }
                     }
+                    BirthdayRow(hasBirthday: $hasBirthday, birthdate: $birthdate)
                     if pet.photoFilename == nil && photoData == nil {
                         FlowLayout(spacing: 8) {
                             ForEach(pet.species.avatarOptions, id: \.self) { option in
@@ -111,6 +116,7 @@ struct PetEditSheet: View {
         if let photoData {
             pet.photoFilename = store.savePhoto(photoData)
         }
+        pet.birthdate = hasBirthday ? birthdate : nil
         store.updatePet(pet)
         dismiss()
     }

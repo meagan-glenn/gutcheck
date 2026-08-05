@@ -110,6 +110,8 @@ struct AddPetSheet: View {
     @State private var photoItem: PhotosPickerItem?
     @State private var photoData: Data?
     @State private var showBreedPicker = false
+    @State private var hasBirthday = false
+    @State private var birthdate = Date()
 
     var body: some View {
         NavigationStack {
@@ -172,6 +174,7 @@ struct AddPetSheet: View {
                                 .foregroundColor(.secondary)
                         }
                     }
+                    BirthdayRow(hasBirthday: $hasBirthday, birthdate: $birthdate)
                 }
 
                 if photoData == nil {
@@ -217,9 +220,37 @@ struct AddPetSheet: View {
                       species: species,
                       breed: breed,
                       avatar: avatar,
-                      photoFilename: photoFilename)
+                      photoFilename: photoFilename,
+                      birthdate: hasBirthday ? birthdate : nil)
         store.addPet(pet)
         dismiss()
+    }
+}
+
+/// Birthday is optional — a tap reveals the picker instead of defaulting to today.
+struct BirthdayRow: View {
+    @Binding var hasBirthday: Bool
+    @Binding var birthdate: Date
+
+    var body: some View {
+        if hasBirthday {
+            DatePicker("Birthday", selection: $birthdate, in: ...Date(), displayedComponents: .date)
+        } else {
+            Button {
+                hasBirthday = true
+            } label: {
+                HStack {
+                    Text("Birthday")
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Text("Add")
+                        .foregroundColor(.secondary)
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
     }
 }
 

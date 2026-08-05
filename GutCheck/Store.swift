@@ -281,9 +281,11 @@ final class AppStore: ObservableObject {
         func hoursAgo(_ h: Double) -> Date { now.addingTimeInterval(-h * 3600) }
 
         let navi = Pet(name: "Navi", species: .dog, breed: "Cattle dog mix", avatar: "🐕",
-                       conditions: ["Sensitive gut"], mode: .watch)
-        let albus = Pet(name: "Albus", species: .dog, breed: "Golden retriever", avatar: "🦮")
-        let arya = Pet(name: "Arya", species: .dog, breed: "Border collie", avatar: "🐶")
+                       conditions: ["Sensitive gut"], mode: .watch, birthdate: daysAgo(1520))
+        let albus = Pet(name: "Albus", species: .dog, breed: "Golden retriever", avatar: "🦮",
+                        birthdate: daysAgo(300))
+        let arya = Pet(name: "Arya", species: .dog, breed: "Border collie", avatar: "🐶",
+                       birthdate: daysAgo(980))
 
         var seeded = AppData()
         seeded.hasOnboarded = true
