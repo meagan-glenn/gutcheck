@@ -13,6 +13,13 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
+                    // A greeting that carries state: warm when all is quiet,
+                    // watchful when an episode is open.
+                    Text(greeting)
+                        .font(.body)
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
                     // The household is the hero — 95% of opens are healthy days,
                     // and the pets are why anyone is here.
                     SectionHeader(title: "The household")
@@ -119,6 +126,17 @@ struct HomeView: View {
             .padding(.vertical, 10)
         }
         .buttonStyle(.bordered)
+    }
+
+    private var greeting: String {
+        let watching = store.activePets.filter { $0.mode != .baseline }
+        if !watching.isEmpty {
+            let names = watching.map(\.name).joined(separator: " and ")
+            return "Keeping an eye on \(names). You've got this."
+        }
+        let hour = Calendar.current.component(.hour, from: Date())
+        let hello = hour < 4 ? "Up late?" : hour < 12 ? "Good morning!" : hour < 18 ? "Good afternoon!" : "Good evening!"
+        return "\(hello) All quiet on the back end."
     }
 
     /// Pre-select the pet most likely being logged: first one in watch mode.
