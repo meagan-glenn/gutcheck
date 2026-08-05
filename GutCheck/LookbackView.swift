@@ -54,7 +54,7 @@ struct LookbackView: View {
                             Spacer()
                         }
                         .padding(10)
-                        .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
+                        .background(RoundedRectangle(cornerRadius: DS.rowRadius).fill(DS.surface))
                     }
                 }
 
@@ -150,7 +150,7 @@ struct OutputRow: View {
             }
         }
         .padding(10)
-        .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
+        .background(RoundedRectangle(cornerRadius: DS.rowRadius).fill(DS.surface))
         .sheet(isPresented: $showPhoto) {
             if let image = thumbnail {
                 ZoomablePhotoView(image: image)

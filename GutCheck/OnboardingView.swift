@@ -41,7 +41,7 @@ struct OnboardingFlow: View {
                                     .foregroundColor(Tier.normal.color)
                             }
                             .padding(12)
-                            .background(RoundedRectangle(cornerRadius: 14).fill(Color(.secondarySystemBackground)))
+                            .background(RoundedRectangle(cornerRadius: DS.radius).fill(DS.surface))
                         }
                     }
                     .padding(.horizontal)
@@ -134,7 +134,7 @@ struct AddPetSheet: View {
                                         .font(.system(size: 44))
                                 }
                             }
-                            Label(photoData == nil ? "Add a photo" : "Change photo", systemImage: "camera.fill")
+                            Label(photoData == nil ? "Add their best photo" : "Change photo", systemImage: "camera.fill")
                                 .font(.subheadline.weight(.medium))
                         }
                         .frame(maxWidth: .infinity)

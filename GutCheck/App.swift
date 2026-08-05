@@ -8,6 +8,9 @@ struct GutCheckApp: App {
         WindowGroup {
             RootView()
                 .environmentObject(store)
+                .fontDesign(.rounded)
+                .tint(DS.brand)
+                .accentColor(DS.brand)
         }
     }
 }
@@ -21,7 +24,7 @@ struct RootView: View {
                 HomeView()
                     .tabItem { Label("Home", systemImage: "house.fill") }
                 HistoryView()
-                    .tabItem { Label("Episodes", systemImage: "clock.arrow.circlepath") }
+                    .tabItem { Label("History", systemImage: "clock.arrow.circlepath") }
             }
         } else {
             OnboardingFlow()

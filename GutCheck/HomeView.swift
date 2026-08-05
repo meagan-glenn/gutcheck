@@ -13,31 +13,8 @@ struct HomeView: View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    // The home screen is one button (UX principle #1).
-                    Button {
-                        showSomethingsOff = true
-                    } label: {
-                        VStack(spacing: 4) {
-                            Image(systemName: "exclamationmark.bubble.fill")
-                                .font(.title2)
-                            Text("Something's off")
-                                .font(.title3.weight(.bold))
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 22)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(Color(red: 0.87, green: 0.44, blue: 0.15))
-
-                    HStack(spacing: 10) {
-                        quickAction("Log output", symbol: "camera.fill") { showCapture = true }
-                        // Food theft needs someone to steal from.
-                        if store.activePets.count >= 2 {
-                            quickAction("Food theft", symbol: "fork.knife.circle") { showCrossFeed = true }
-                        }
-                        quickAction("Med / stress", symbol: "pills.circle") { showExposure = true }
-                    }
-
+                    // The household is the hero — 95% of opens are healthy days,
+                    // and the pets are why anyone is here.
                     SectionHeader(title: "The household")
 
                     ForEach(store.activePets) { pet in
@@ -77,10 +54,38 @@ struct HomeView: View {
                         .foregroundColor(.secondary)
                         .frame(maxWidth: .infinity)
                     }
+
+                    SectionHeader(title: "Quick log")
+                        .padding(.top, 4)
+
+                    HStack(spacing: 10) {
+                        quickAction("Log a poop", symbol: "camera.fill") { showCapture = true }
+                        // Food theft needs someone to steal from.
+                        if store.activePets.count >= 2 {
+                            quickAction("Food theft", symbol: "fork.knife.circle") { showCrossFeed = true }
+                        }
+                        quickAction("Meds & stress", symbol: "pills.circle") { showExposure = true }
+                    }
                 }
                 .padding()
             }
             .navigationTitle("Gut Check")
+            // Firm but calm, anchored in the thumb zone. Brand indigo, not
+            // alarm orange — the alarm state belongs to the pet cards.
+            .safeAreaInset(edge: .bottom) {
+                Button {
+                    showSomethingsOff = true
+                } label: {
+                    Label("Something's off", systemImage: "exclamationmark.bubble.fill")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 10)
+                }
+                .buttonStyle(.borderedProminent)
+                .padding(.horizontal)
+                .padding(.bottom, 4)
+                .background(.thinMaterial)
+            }
             .sheet(isPresented: $showSomethingsOff) {
                 SomethingsOffSheet()
             }
@@ -171,17 +176,20 @@ struct PetCard: View {
     var body: some View {
         let episode = store.activeEpisode(for: pet.id)
         HStack(spacing: 14) {
-            PetAvatar(pet: pet, size: 48)
+            PetAvatar(pet: pet, size: 60)
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 8) {
                     Text(pet.name)
-                        .font(.headline)
-                    Text(pet.mode.label)
-                        .font(.caption2.weight(.bold))
-                        .padding(.horizontal, 7)
-                        .padding(.vertical, 2)
-                        .background(Capsule().fill(pet.mode.badgeColor.opacity(0.18)))
-                        .foregroundColor(pet.mode.badgeColor)
+                        .font(.title3.weight(.semibold))
+                    // The badge only appears when there's something to say.
+                    if episode != nil {
+                        Text(pet.mode.label)
+                            .font(.caption2.weight(.bold))
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 2)
+                            .background(Capsule().fill(pet.mode.badgeColor.opacity(0.18)))
+                            .foregroundColor(pet.mode.badgeColor)
+                    }
                 }
                 if let episode = episode {
                     Text("Day \(episode.durationDays) · \(episode.note)")
@@ -189,8 +197,12 @@ struct PetCard: View {
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                     ResolutionDots(progress: store.resolutionProgress(for: episode))
+                } else if let lastLog = store.lastOutputDate(for: pet.id) {
+                    Text("All quiet · logged \(relativeDay(lastLog))")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                 } else {
-                    Text("All quiet — nothing needed")
+                    Text("All quiet — a first log starts their baseline")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -200,8 +212,8 @@ struct PetCard: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
-        .padding()
-        .background(RoundedRectangle(cornerRadius: 16).fill(Color(.secondarySystemBackground)))
+        // Watch mode escalates the card itself — state lives with the pet.
+        .card(episode == nil ? DS.surface : Tier.monitor.color.opacity(0.10))
     }
 }
 

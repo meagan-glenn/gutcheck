@@ -75,6 +75,10 @@ final class AppStore: ObservableObject {
         data.pets.filter { !$0.isArchived }
     }
 
+    func lastOutputDate(for petID: UUID) -> Date? {
+        data.events.filter { $0.petID == petID }.map(\.date).max()
+    }
+
     func activeEpisode(for petID: UUID) -> Episode? {
         data.episodes.first { $0.petID == petID && $0.isActive }
     }

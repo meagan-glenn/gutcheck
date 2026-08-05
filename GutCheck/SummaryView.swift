@@ -36,7 +36,7 @@ struct SummarySheet: View {
                                 .font(.subheadline)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(10)
-                                .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
+                                .background(RoundedRectangle(cornerRadius: DS.rowRadius).fill(DS.surface))
                         }
                     }
 
@@ -54,7 +54,7 @@ struct SummarySheet: View {
                             .font(.subheadline)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(10)
-                            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
+                            .background(RoundedRectangle(cornerRadius: DS.rowRadius).fill(DS.surface))
                     }
 
                     Text("Owner-logged observations, not a clinical record. Nothing here is a diagnosis.")

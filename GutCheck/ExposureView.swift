@@ -35,17 +35,30 @@ struct ExposureSheet: View {
 
                     if soloPet == nil {
                         SectionHeader(title: "Who?")
-                        FlowLayout(spacing: 8) {
-                            Chip(label: "Whole household", isSelected: wholeHousehold, tint: .accentColor) {
-                                wholeHousehold = true
-                                petID = nil
-                            }
+                        HStack(alignment: .top, spacing: 16) {
                             ForEach(store.activePets) { pet in
-                                Chip(label: "\(pet.avatar) \(pet.name)", isSelected: petID == pet.id, tint: .accentColor) {
+                                let isSelected = petID == pet.id && !wholeHousehold
+                                Button {
                                     petID = pet.id
                                     wholeHousehold = false
+                                } label: {
+                                    VStack(spacing: 5) {
+                                        PetAvatar(pet: pet, size: 54)
+                                            .overlay(
+                                                Circle().stroke(isSelected ? DS.brand : .clear, lineWidth: 2.5)
+                                            )
+                                        Text(pet.name)
+                                            .font(.caption.weight(isSelected ? .bold : .regular))
+                                            .foregroundColor(isSelected ? DS.brand : .secondary)
+                                    }
                                 }
+                                .buttonStyle(.plain)
                             }
+                            Spacer()
+                        }
+                        Chip(label: "Whole household", isSelected: wholeHousehold, tint: .accentColor) {
+                            wholeHousehold = true
+                            petID = nil
                         }
                     }
 
@@ -76,7 +89,7 @@ struct ExposureSheet: View {
                 }
                 .padding()
             }
-            .navigationTitle("Med / stress / intake")
+            .navigationTitle("Meds & stress")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -124,7 +137,7 @@ struct ExposureRow: View {
             Spacer()
         }
         .padding(10)
-        .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
+        .background(RoundedRectangle(cornerRadius: DS.rowRadius).fill(DS.surface))
     }
 
     private var subject: String {

@@ -25,7 +25,7 @@ struct HistoryView: View {
                 }
                 .padding()
             }
-            .navigationTitle("Episodes")
+            .navigationTitle("History")
         }
     }
 }
@@ -70,6 +70,6 @@ struct EpisodeCard: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 14).fill(Color(.secondarySystemBackground)))
+        .background(RoundedRectangle(cornerRadius: DS.radius).fill(DS.surface))
     }
 }

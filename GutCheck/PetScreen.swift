@@ -121,7 +121,7 @@ struct PetScreen: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(RoundedRectangle(cornerRadius: 16).fill(Color(.secondarySystemBackground)))
+        .background(RoundedRectangle(cornerRadius: DS.radius).fill(DS.surface))
     }
 
     // MARK: Episode context (med framing, resolve)
@@ -142,7 +142,7 @@ struct PetScreen: View {
             }
             .padding(12)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(RoundedRectangle(cornerRadius: 12).fill(Tier.concern.color.opacity(0.08)))
+            .background(RoundedRectangle(cornerRadius: DS.radius).fill(Tier.concern.color.opacity(0.08)))
         }
 
         if store.resolutionProgress(for: episode) >= 3 {
@@ -245,7 +245,7 @@ struct PetScreen: View {
                     .foregroundColor(.secondary)
             }
             .padding(10)
-            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
+            .background(RoundedRectangle(cornerRadius: DS.rowRadius).fill(DS.surface))
         case .exposure(let exposure):
             ExposureRow(exposure: exposure)
         case .crossFeed(let feed):
@@ -261,7 +261,7 @@ struct PetScreen: View {
                     .foregroundColor(.secondary)
             }
             .padding(10)
-            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
+            .background(RoundedRectangle(cornerRadius: DS.rowRadius).fill(DS.surface))
         }
     }
 

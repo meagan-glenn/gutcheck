@@ -38,7 +38,7 @@ struct CaptureSheet: View {
                     captureForm
                 }
             }
-            .navigationTitle(lookbackPetID == nil ? "Log an output" : "48-hour lookback")
+            .navigationTitle(lookbackPetID == nil ? "Log a poop" : "48-hour lookback")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -51,16 +51,25 @@ struct CaptureSheet: View {
     private var captureForm: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
-                // Pet picker
-                HStack {
-                    Text("For")
-                        .foregroundColor(.secondary)
-                    Picker("Pet", selection: $petID) {
-                        ForEach(store.activePets) { pet in
-                            Text("\(pet.avatar) \(pet.name)").tag(Optional(pet.id))
+                // Who: large avatars, not a text menu — in a multi-pet house,
+                // logging to the wrong animal is the #1 silent data error.
+                HStack(alignment: .top, spacing: 16) {
+                    ForEach(store.activePets) { pet in
+                        Button {
+                            petID = pet.id
+                        } label: {
+                            VStack(spacing: 5) {
+                                PetAvatar(pet: pet, size: 54)
+                                    .overlay(
+                                        Circle().stroke(petID == pet.id ? DS.brand : .clear, lineWidth: 2.5)
+                                    )
+                                Text(pet.name)
+                                    .font(.caption.weight(petID == pet.id ? .bold : .regular))
+                                    .foregroundColor(petID == pet.id ? DS.brand : .secondary)
+                            }
                         }
+                        .buttonStyle(.plain)
                     }
-                    .pickerStyle(.menu)
                     Spacer()
                     TierBadge(tier: liveTier)
                 }
@@ -88,7 +97,7 @@ struct CaptureSheet: View {
                         }
                         .padding(12)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(RoundedRectangle(cornerRadius: 12).fill(Color(.secondarySystemBackground)))
+                        .background(RoundedRectangle(cornerRadius: DS.rowRadius).fill(DS.surface))
                     } else {
                         HStack(spacing: 12) {
                             Image(systemName: "camera.fill")
@@ -108,7 +117,7 @@ struct CaptureSheet: View {
                         }
                         .padding(12)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(RoundedRectangle(cornerRadius: 12).fill(Color(.secondarySystemBackground)))
+                        .background(RoundedRectangle(cornerRadius: DS.rowRadius).fill(DS.surface))
                     }
                 }
                 .buttonStyle(.plain)
@@ -120,25 +129,19 @@ struct CaptureSheet: View {
                 }
 
                 axisSection(title: "Consistency", tier: reading.consistency.tier) {
-                    chipWrap {
-                        ForEach(ConsistencyChoice.primary) { choice in
-                            Chip(label: choice.label,
-                                 isSelected: reading.consistency == choice,
-                                 tint: choice.tier.color) {
-                                reading.consistency = choice
-                            }
+                    // An ordered scale should look ordered: severity runs left
+                    // to right, unlike the unordered chip sets below.
+                    OrdinalScale(selection: $reading.consistency)
+                    if showMoreConsistency || reading.consistency == .hard {
+                        Chip(label: ConsistencyChoice.hard.label,
+                             isSelected: reading.consistency == .hard,
+                             tint: ConsistencyChoice.hard.tier.color) {
+                            reading.consistency = .hard
                         }
-                        if showMoreConsistency || reading.consistency == .hard {
-                            Chip(label: ConsistencyChoice.hard.label,
-                                 isSelected: reading.consistency == .hard,
-                                 tint: ConsistencyChoice.hard.tier.color) {
-                                reading.consistency = .hard
-                            }
-                        } else {
-                            Chip(label: "more…", isSelected: false, tint: .secondary) {
-                                showMoreConsistency = true
-                            }
-                        }
+                    } else {
+                        Button("more…") { showMoreConsistency = true }
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
                 }
 
@@ -224,6 +227,15 @@ struct CaptureSheet: View {
     /// button and the save is demoted to a text link.
     @ViewBuilder
     private var saveArea: some View {
+        // Triage feedback repeated at the point of commitment — the top badge
+        // is off-screen by the time the thumb reaches save.
+        HStack(spacing: 8) {
+            Text("Reads as")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            TierBadge(tier: liveTier)
+            Spacer()
+        }
         if liveTier == .urgent {
             VStack(spacing: 12) {
                 Label("This is one of the things vets want to know about promptly.",
@@ -288,6 +300,41 @@ struct CaptureSheet: View {
     private func chipWrap<Content: View>(@ViewBuilder content: () -> Content) -> some View {
         FlowLayout(spacing: 8) {
             content()
+        }
+    }
+}
+
+/// The five-point consistency scale as an ordered horizontal control —
+/// severity is legible in the layout itself, left (fine) to right (bad).
+struct OrdinalScale: View {
+    @Binding var selection: ConsistencyChoice
+
+    var body: some View {
+        HStack(spacing: 5) {
+            ForEach(ConsistencyChoice.primary) { choice in
+                let isSelected = selection == choice
+                Button {
+                    selection = choice
+                } label: {
+                    Text(choice.label)
+                        .font(.caption2.weight(isSelected ? .bold : .medium))
+                        .multilineTextAlignment(.center)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.8)
+                        .frame(maxWidth: .infinity, minHeight: 44)
+                        .padding(.horizontal, 2)
+                        .background(
+                            RoundedRectangle(cornerRadius: DS.rowRadius)
+                                .fill(isSelected ? choice.tier.color.opacity(0.18) : DS.surface)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DS.rowRadius)
+                                .stroke(isSelected ? choice.tier.color : Color.clear, lineWidth: 1.5)
+                        )
+                        .foregroundColor(isSelected ? choice.tier.color : .primary)
+                }
+                .buttonStyle(.plain)
+            }
         }
     }
 }
