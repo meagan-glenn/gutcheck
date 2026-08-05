@@ -337,7 +337,7 @@ enum ExposureKind: String, Codable, CaseIterable, Identifiable {
     }
 }
 
-struct ExposureEvent: Identifiable, Codable {
+struct ExposureEvent: Identifiable, Codable, Equatable {
     var id: UUID
     var petID: UUID? // nil = the whole household
     var kind: ExposureKind
@@ -432,7 +432,7 @@ struct Item: Identifiable, Codable, Equatable {
     }
 }
 
-struct OutputEvent: Identifiable, Codable {
+struct OutputEvent: Identifiable, Codable, Equatable {
     var id: UUID
     var petID: UUID
     var date: Date
@@ -452,7 +452,7 @@ struct OutputEvent: Identifiable, Codable {
     }
 }
 
-struct Intervention: Identifiable, Codable {
+struct Intervention: Identifiable, Codable, Equatable {
     var id: UUID
     var petID: UUID
     var episodeID: UUID?
@@ -468,7 +468,7 @@ struct Intervention: Identifiable, Codable {
     }
 }
 
-struct CrossFeed: Identifiable, Codable {
+struct CrossFeed: Identifiable, Codable, Equatable {
     var id: UUID
     var eaterID: UUID
     var foodOwnerID: UUID
@@ -484,7 +484,7 @@ struct CrossFeed: Identifiable, Codable {
     }
 }
 
-struct Episode: Identifiable, Codable {
+struct Episode: Identifiable, Codable, Equatable {
     var id: UUID
     var petID: UUID
     var start: Date

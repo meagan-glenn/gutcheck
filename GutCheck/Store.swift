@@ -35,8 +35,19 @@ struct LogResult {
 }
 
 final class AppStore: ObservableObject {
+    /// Sync seam: every local mutation flows through here as (old, new) so the
+    /// sync layer can diff it into per-record changes. Remote applies set
+    /// `isApplyingRemote` so they persist locally without echoing back up.
+    var onLocalChange: ((AppData, AppData) -> Void)?
+    var isApplyingRemote = false
+
     @Published var data: AppData {
-        didSet { save() }
+        didSet {
+            save()
+            if !isApplyingRemote {
+                onLocalChange?(oldValue, data)
+            }
+        }
     }
 
     private let fileURL: URL = {

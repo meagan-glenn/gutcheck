@@ -8,6 +8,8 @@ struct HomeView: View {
     @State private var showExposure = false
     @State private var showAddPet = false
     @State private var showArchived = false
+    @State private var showSync = false
+    @ObservedObject private var sync = CloudSync.shared
 
     var body: some View {
         NavigationStack {
@@ -62,6 +64,17 @@ struct HomeView: View {
                         .frame(maxWidth: .infinity)
                     }
 
+                    // One quiet row; the sheet holds the invite and status.
+                    Button {
+                        showSync = true
+                    } label: {
+                        Label(syncRowLabel, systemImage: syncRowSymbol)
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.plain)
+
                     SectionHeader(title: "Quick log")
                         .padding(.top, 4)
 
@@ -111,6 +124,9 @@ struct HomeView: View {
             .sheet(isPresented: $showArchived) {
                 ArchivedPetsSheet()
             }
+            .sheet(isPresented: $showSync) {
+                SyncSheet()
+            }
         }
     }
 
@@ -137,6 +153,20 @@ struct HomeView: View {
         let hour = Calendar.current.component(.hour, from: Date())
         let hello = hour < 4 ? "Up late?" : hour < 12 ? "Good morning!" : hour < 18 ? "Good afternoon!" : "Good evening!"
         return "\(hello) All quiet on the back end."
+    }
+
+    private var syncRowLabel: String {
+        switch sync.status {
+        case .live(true): return "Share with your household"
+        case .live(false): return "Shared household"
+        case .starting: return "Household sync"
+        case .off: return "Household sync is off"
+        }
+    }
+
+    private var syncRowSymbol: String {
+        if case .live = sync.status { return "checkmark.icloud" }
+        return "icloud"
     }
 
     /// Pre-select the pet most likely being logged: first one in watch mode.

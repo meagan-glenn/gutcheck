@@ -12,6 +12,7 @@
 		2B19DED9E13DE7E07B8A275A /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D4310DA157945EED9A6B0CBD /* SummaryView.swift */; };
 		3CE4D6ABD5529ADF77C2E0E9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB6EA9A8BC10FD3514AB54B2 /* Assets.xcassets */; };
 		46ED080FDA326931A99A049D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C43088D0E1D620D7BB33DD /* HomeView.swift */; };
+		4BDB42498BCD17E81ABB97F2 /* CloudSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 842667E423BB5EE12AC0DA99 /* CloudSync.swift */; };
 		57F9E7FA0E4EA01C610837D1 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E41E7F0E7076C34A9D4DB42 /* App.swift */; };
 		654C9362AB39E028E1035DAC /* ExposureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14B16B7E22D869F11E21A3F7 /* ExposureView.swift */; };
 		ABB28192275EE73CC1F538C8 /* LookbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6041A40F4EAAC165B68C14C6 /* LookbackView.swift */; };
@@ -19,6 +20,7 @@
 		BAF54BB715032E6ED3F71C58 /* AIScorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 153513293E97E186E6D2F584 /* AIScorer.swift */; };
 		BB1B6F216899456A9E348335 /* Domain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64F3F7188AF5F7B5A1FB6C15 /* Domain.swift */; };
 		C8A0CD3B4D40037B6DBD89D2 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2918A3A27FA8F9D8F3095DB /* OnboardingView.swift */; };
+		CFB301FF88B80BD1A377AD0F /* SyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3E848D8F4B1838A8D9A1CC6 /* SyncView.swift */; };
 		DC0FFE8E19BAEEBE363DC400 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = E78199832FC64C3A70E1470A /* Theme.swift */; };
 		DD9BE109FAF5BE7CD2355ED6 /* CaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A090BCE70EB346758E9D6F5 /* CaptureView.swift */; };
 		E6E60CA6C34923021B0E82E8 /* Store.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24EE06A27176DE73DCD95CE6 /* Store.swift */; };
@@ -33,10 +35,13 @@
 		3A090BCE70EB346758E9D6F5 /* CaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureView.swift; sourceTree = "<group>"; };
 		4C3C7710545B1BF61972044B /* GutCheck.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = GutCheck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		547A9BD361A6B6D696EF818E /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		5558F0CCCAD205FA530CF3AF /* GutCheck.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = GutCheck.entitlements; sourceTree = "<group>"; };
 		6041A40F4EAAC165B68C14C6 /* LookbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LookbackView.swift; sourceTree = "<group>"; };
 		64F3F7188AF5F7B5A1FB6C15 /* Domain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Domain.swift; sourceTree = "<group>"; };
 		65DF898CEFE63C8E710E458E /* PetScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PetScreen.swift; sourceTree = "<group>"; };
+		842667E423BB5EE12AC0DA99 /* CloudSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSync.swift; sourceTree = "<group>"; };
 		A2918A3A27FA8F9D8F3095DB /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		B3E848D8F4B1838A8D9A1CC6 /* SyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncView.swift; sourceTree = "<group>"; };
 		C8C43088D0E1D620D7BB33DD /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		D4310DA157945EED9A6B0CBD /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
 		E78199832FC64C3A70E1470A /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -59,8 +64,10 @@
 				2E41E7F0E7076C34A9D4DB42 /* App.swift */,
 				EB6EA9A8BC10FD3514AB54B2 /* Assets.xcassets */,
 				3A090BCE70EB346758E9D6F5 /* CaptureView.swift */,
+				842667E423BB5EE12AC0DA99 /* CloudSync.swift */,
 				64F3F7188AF5F7B5A1FB6C15 /* Domain.swift */,
 				14B16B7E22D869F11E21A3F7 /* ExposureView.swift */,
+				5558F0CCCAD205FA530CF3AF /* GutCheck.entitlements */,
 				547A9BD361A6B6D696EF818E /* HistoryView.swift */,
 				C8C43088D0E1D620D7BB33DD /* HomeView.swift */,
 				6041A40F4EAAC165B68C14C6 /* LookbackView.swift */,
@@ -69,6 +76,7 @@
 				65DF898CEFE63C8E710E458E /* PetScreen.swift */,
 				24EE06A27176DE73DCD95CE6 /* Store.swift */,
 				D4310DA157945EED9A6B0CBD /* SummaryView.swift */,
+				B3E848D8F4B1838A8D9A1CC6 /* SyncView.swift */,
 				E78199832FC64C3A70E1470A /* Theme.swift */,
 			);
 			path = GutCheck;
@@ -175,6 +183,7 @@
 				BAF54BB715032E6ED3F71C58 /* AIScorer.swift in Sources */,
 				57F9E7FA0E4EA01C610837D1 /* App.swift in Sources */,
 				DD9BE109FAF5BE7CD2355ED6 /* CaptureView.swift in Sources */,
+				4BDB42498BCD17E81ABB97F2 /* CloudSync.swift in Sources */,
 				BB1B6F216899456A9E348335 /* Domain.swift in Sources */,
 				654C9362AB39E028E1035DAC /* ExposureView.swift in Sources */,
 				B9256EF7178987D36E7FFC6C /* HistoryView.swift in Sources */,
@@ -185,6 +194,7 @@
 				06C431C40892AB6BFBFF4C19 /* PetScreen.swift in Sources */,
 				E6E60CA6C34923021B0E82E8 /* Store.swift in Sources */,
 				2B19DED9E13DE7E07B8A275A /* SummaryView.swift in Sources */,
+				CFB301FF88B80BD1A377AD0F /* SyncView.swift in Sources */,
 				DC0FFE8E19BAEEBE363DC400 /* Theme.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -196,11 +206,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GutCheck/GutCheck.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Scoop;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = "remote-notification";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -260,7 +272,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -322,7 +334,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -338,11 +350,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = GutCheck/GutCheck.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = Scoop;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UIBackgroundModes = "remote-notification";
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				LD_RUNPATH_SEARCH_PATHS = (

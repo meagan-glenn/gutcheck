@@ -29,7 +29,7 @@ When an animal gets sick, its owner becomes an amateur epidemiologist overnight 
 
 ## What's implemented
 
-First-run onboarding (searchable breed picker, profile photo upload, "just looking" demo household) · household home with per-pet status, add-an-animal any time · 4C capture with photo attach (system picker) and real AI photo scoring via Claude (see below) and backdated logging ("just now / earlier today / yesterday" — the causal windows need honest timestamps) · four-tier triage ladder with liquid-frequency escalation · episode state machine (baseline → watch → 3 consecutive normals → resolved) with a manual end-episode escape hatch · one-tap interventions · 48-hour lookback · cross-feeding and med/stress exposure events · unified per-pet timeline with long-press delete (mis-logs must be fixable — they feed triage and the vet summary) · pet editing (photo, breed, birthday, conditions) · archive/restore animals (history kept) · shareable vet summary (30-day headline with age, suspected triggers ≤72h before onset, what was tried, flag log, questions-for-the-vet).
+First-run onboarding (searchable breed picker, profile photo upload, "just looking" demo household) · household home with per-pet status, add-an-animal any time · 4C capture with photo attach (system picker) and real AI photo scoring via Claude (see below) and backdated logging ("just now / earlier today / yesterday" — the causal windows need honest timestamps) · four-tier triage ladder with liquid-frequency escalation · episode state machine (baseline → watch → 3 consecutive normals → resolved) with a manual end-episode escape hatch · one-tap interventions · 48-hour lookback · cross-feeding and med/stress exposure events · unified per-pet timeline with long-press delete (mis-logs must be fixable — they feed triage and the vet summary) · pet editing (photo, breed, birthday, conditions) · archive/restore animals (history kept) · CloudKit household sync with partner invites (see below) · shareable vet summary (30-day headline with age, suspected triggers ≤72h before onset, what was tried, flag log, questions-for-the-vet).
 
 ## Scope cuts
 
@@ -39,7 +39,7 @@ The PRD specs more than this. Three features were built, then deliberately cut t
 - **The Insights tab.** The association engine's real distribution channel is the vet summary, where a professional interprets the correlations. A standalone insights screen is the most speculative surface in the app and the emptiest on day one.
 - **Chronic pinning** (a mode for animals whose episode never closes). Real need, edge persona — the kind of thing you add when a chronically-ill-dog owner asks for it.
 
-**Also not yet:** PDF export, household invites / second-opinion loop, a backend proxy for the AI call, and an AI pattern-spotting layer in the vet summary (designed but unbuilt; see "Where the AI deliberately isn't" below).
+**Also not yet:** PDF export, the second-opinion loop, a backend proxy for the AI call, and an AI pattern-spotting layer in the vet summary (designed but unbuilt; see "Where the AI deliberately isn't" below).
 
 ## AI photo scoring
 
@@ -74,6 +74,17 @@ The vet summary has no prompt. Every line of it is computed: the headline counts
 - **So AI sits at the noisy input end** (photo scoring, where a human reviews every proposal before saving) **and stays out of the clinical output end** (the summary, which only aggregates what the owner confirmed).
 
 There is a caged V2 design for AI in the summary, deliberately not built yet: a separate "patterns you might ask about" layer that reads the structured event log, returns observations via a strict tool call where each one must cite the event IDs supporting it (uncited observations are dropped in code before rendering), and renders visibly fenced off from the factual record, phrased as questions. It's unbuilt for the same reason protocol replay was cut: pattern-spotting across episodes has nothing to say until a user has multiple episodes, and a day-one summary would render an empty AI section. Strongest V2 pairing: replay says "this worked last time," patterns say "this preceded it last time."
+
+## Household sync (CloudKit)
+
+The multi-pet household is the wedge, so the household is also the sync unit: one partner owns the record zone in their private iCloud, shares it zone-wide (CKShare), and everyone else logs into the same zone from their own phone through the shared database. Built on CKSyncEngine with no backend at all; photos ride along as CKAssets.
+
+- **The JSON store stays the source of truth.** CloudKit mirrors it: every domain record syncs as one CKRecord carrying the same JSON the local file stores, so there is exactly one schema and the tolerant-decoding rules protect both paths.
+- **Graceful degradation, again.** No iCloud account, or a clone built without the CloudKit container, and the app is exactly as local-only as it was before sync existed. The sync row on the home screen says so instead of pretending.
+- **Conflicts are last-writer-wins per record.** Two people rarely edit the same poop. The failure mode this accepts (simultaneous edits to the same record, one wins) is much cheaper than the merge machinery it avoids.
+- **Joining replaces.** Accepting a household invite makes the shared household your household. V1 rule, documented rather than hidden.
+
+Activating it requires an Apple Developer Program membership (the iCloud container is provisioned through the paid account); without one the code paths above simply stay dark.
 
 ## Build & run
 
