@@ -10,6 +10,7 @@ struct CaptureSheet: View {
 
     @State var petID: UUID?
     @State private var reading: StoolReading = .normal
+    @State private var timing: LogTiming = .justNow
     @State private var note = ""
     @State private var photoItem: PhotosPickerItem?
     @State private var photoData: Data?
@@ -55,7 +56,7 @@ struct CaptureSheet: View {
                     Text("For")
                         .foregroundColor(.secondary)
                     Picker("Pet", selection: $petID) {
-                        ForEach(store.data.pets) { pet in
+                        ForEach(store.activePets) { pet in
                             Text("\(pet.avatar) \(pet.name)").tag(Optional(pet.id))
                         }
                     }
@@ -190,6 +191,16 @@ struct CaptureSheet: View {
                     }
                 }
 
+                axisSection(title: "When?", tier: .normal) {
+                    chipWrap {
+                        ForEach(LogTiming.allCases) { option in
+                            Chip(label: option.label, isSelected: timing == option, tint: .accentColor) {
+                                timing = option
+                            }
+                        }
+                    }
+                }
+
                 PillTextField(placeholder: "Note", text: $note)
 
                 saveArea
@@ -253,7 +264,7 @@ struct CaptureSheet: View {
     private func save() {
         guard let petID = petID else { return }
         let filename = photoData.map { store.savePhoto($0) }
-        let result = store.logOutput(petID: petID, reading: reading, note: note, photoFilename: filename)
+        let result = store.logOutput(petID: petID, reading: reading, note: note, photoFilename: filename, date: timing.date)
         savedResult = result
         if result.suggestWatch {
             showWatchPrompt = true

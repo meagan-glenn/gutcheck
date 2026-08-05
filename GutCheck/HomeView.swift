@@ -7,6 +7,7 @@ struct HomeView: View {
     @State private var showCrossFeed = false
     @State private var showExposure = false
     @State private var showAddPet = false
+    @State private var showArchived = false
 
     var body: some View {
         NavigationStack {
@@ -31,7 +32,7 @@ struct HomeView: View {
                     HStack(spacing: 10) {
                         quickAction("Log output", symbol: "camera.fill") { showCapture = true }
                         // Food theft needs someone to steal from.
-                        if store.data.pets.count >= 2 {
+                        if store.activePets.count >= 2 {
                             quickAction("Food theft", symbol: "fork.knife.circle") { showCrossFeed = true }
                         }
                         quickAction("Med / stress", symbol: "pills.circle") { showExposure = true }
@@ -39,7 +40,7 @@ struct HomeView: View {
 
                     SectionHeader(title: "The household")
 
-                    ForEach(store.data.pets) { pet in
+                    ForEach(store.activePets) { pet in
                         NavigationLink {
                             PetScreen(petID: pet.id)
                         } label: {
@@ -66,6 +67,16 @@ struct HomeView: View {
                         )
                     }
                     .buttonStyle(.plain)
+
+                    let archived = store.data.pets.filter { $0.isArchived }
+                    if !archived.isEmpty {
+                        Button("Archived animals (\(archived.count))") {
+                            showArchived = true
+                        }
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                        .frame(maxWidth: .infinity)
+                    }
                 }
                 .padding()
             }
@@ -84,6 +95,9 @@ struct HomeView: View {
             }
             .sheet(isPresented: $showAddPet) {
                 AddPetSheet()
+            }
+            .sheet(isPresented: $showArchived) {
+                ArchivedPetsSheet()
             }
         }
     }
@@ -104,8 +118,49 @@ struct HomeView: View {
 
     /// Pre-select the pet most likely being logged: first one in watch mode.
     private var defaultCapturePet: UUID? {
-        let watched = store.data.pets.first { $0.mode != .baseline }
-        return (watched ?? store.data.pets.first)?.id
+        let watched = store.activePets.first { $0.mode != .baseline }
+        return (watched ?? store.activePets.first)?.id
+    }
+}
+
+/// Archived animals: out of the household, history kept, one tap to return.
+struct ArchivedPetsSheet: View {
+    @EnvironmentObject var store: AppStore
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(store.data.pets.filter { $0.isArchived }) { pet in
+                    HStack(spacing: 12) {
+                        PetAvatar(pet: pet, size: 40)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(pet.name)
+                                .font(.headline)
+                            Text(pet.breed.isEmpty ? pet.species.rawValue : pet.breed)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        Spacer()
+                        Button("Restore") {
+                            store.restorePet(pet.id)
+                            if store.data.pets.filter({ $0.isArchived }).isEmpty {
+                                dismiss()
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .font(.subheadline)
+                    }
+                }
+            }
+            .navigationTitle("Archived")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") { dismiss() }
+                }
+            }
+        }
     }
 }
 
@@ -187,7 +242,7 @@ struct SomethingsOffSheet: View {
                 } else {
                     Form {
                         Section("Who's off?") {
-                            ForEach(store.data.pets) { pet in
+                            ForEach(store.activePets) { pet in
                                 Button {
                                     selectedPetID = pet.id
                                 } label: {

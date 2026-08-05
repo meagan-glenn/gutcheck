@@ -29,7 +29,7 @@ When an animal gets sick, its owner becomes an amateur epidemiologist overnight 
 
 ## What's implemented
 
-First-run onboarding (searchable breed picker, profile photo upload, "just looking" demo household) · household home with per-pet status · 4C capture with photo attach (system picker; AI scoring stubbed as prefill-and-correct) · four-tier triage ladder with liquid-frequency escalation · episode state machine (baseline → watch → 3 consecutive normals → resolved) · one-tap interventions · 48-hour lookback · cross-feeding and med/stress exposure events · unified per-pet timeline · pet editing (photo, breed, conditions) · shareable vet summary (30-day headline, suspected triggers ≤72h before onset, what was tried, flag log, questions-for-the-vet).
+First-run onboarding (searchable breed picker, profile photo upload, "just looking" demo household) · household home with per-pet status, add-an-animal any time · 4C capture with photo attach (system picker; AI scoring stubbed as prefill-and-correct) and backdated logging ("just now / earlier today / yesterday" — the causal windows need honest timestamps) · four-tier triage ladder with liquid-frequency escalation · episode state machine (baseline → watch → 3 consecutive normals → resolved) with a manual end-episode escape hatch · one-tap interventions · 48-hour lookback · cross-feeding and med/stress exposure events · unified per-pet timeline with long-press delete (mis-logs must be fixable — they feed triage and the vet summary) · pet editing (photo, breed, birthday, conditions) · archive/restore animals (history kept) · shareable vet summary (30-day headline with age, suspected triggers ≤72h before onset, what was tried, flag log, questions-for-the-vet).
 
 ## Scope cuts
 

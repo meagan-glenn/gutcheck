@@ -215,7 +215,7 @@ struct CrossFeedSheet: View {
                 Section("Who ate…") {
                     Picker("Eater", selection: $eaterID) {
                         Text("Pick a pet").tag(UUID?.none)
-                        ForEach(store.data.pets) { pet in
+                        ForEach(store.activePets) { pet in
                             Text("\(pet.avatar) \(pet.name)").tag(Optional(pet.id))
                         }
                     }
@@ -223,7 +223,7 @@ struct CrossFeedSheet: View {
                 Section("…whose food?") {
                     Picker("Food owner", selection: $ownerID) {
                         Text("Pick a pet").tag(UUID?.none)
-                        ForEach(store.data.pets) { pet in
+                        ForEach(store.activePets) { pet in
                             Text("\(pet.avatar) \(pet.name)").tag(Optional(pet.id))
                         }
                     }

@@ -9,6 +9,7 @@ struct ExposureSheet: View {
     @State private var kind: ExposureKind?
     @State private var petID: UUID?
     @State private var wholeHousehold = false
+    @State private var timing: LogTiming = .justNow
     @State private var note = ""
 
     private let medKinds: [ExposureKind] = [.medStarted, .medChanged]
@@ -17,7 +18,7 @@ struct ExposureSheet: View {
 
     /// With one animal there's no "who" to ask — everything is theirs.
     private var soloPet: Pet? {
-        store.data.pets.count == 1 ? store.data.pets.first : nil
+        store.activePets.count == 1 ? store.activePets.first : nil
     }
 
     var body: some View {
@@ -39,11 +40,20 @@ struct ExposureSheet: View {
                                 wholeHousehold = true
                                 petID = nil
                             }
-                            ForEach(store.data.pets) { pet in
+                            ForEach(store.activePets) { pet in
                                 Chip(label: "\(pet.avatar) \(pet.name)", isSelected: petID == pet.id, tint: .accentColor) {
                                     petID = pet.id
                                     wholeHousehold = false
                                 }
+                            }
+                        }
+                    }
+
+                    SectionHeader(title: "When?")
+                    FlowLayout(spacing: 8) {
+                        ForEach(LogTiming.allCases) { option in
+                            Chip(label: option.label, isSelected: timing == option, tint: .accentColor) {
+                                timing = option
                             }
                         }
                     }
@@ -53,7 +63,7 @@ struct ExposureSheet: View {
                     Button {
                         guard let kind = kind else { return }
                         let target = soloPet?.id ?? (wholeHousehold ? nil : petID)
-                        store.logExposure(kind: kind, petID: target, note: note)
+                        store.logExposure(kind: kind, petID: target, note: note, date: timing.date)
                         dismiss()
                     } label: {
                         Text("Log it")

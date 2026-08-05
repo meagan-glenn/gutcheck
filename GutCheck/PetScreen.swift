@@ -11,6 +11,7 @@ struct PetScreen: View {
     @State private var showCapture = false
     @State private var showSummary = false
     @State private var showEdit = false
+    @State private var showEndEpisodeConfirm = false
 
     var body: some View {
         let pet = store.pet(petID)
@@ -178,6 +179,27 @@ struct PetScreen: View {
                 }
             }
         }
+
+        // Escape hatch: episodes must be closable even if logging stopped —
+        // otherwise "better and busy" leaves watch mode on forever.
+        if store.resolutionProgress(for: episode) < 3 {
+            Button {
+                showEndEpisodeConfirm = true
+            } label: {
+                Text("All better? End this episode")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity)
+            }
+            .confirmationDialog("End this episode?", isPresented: $showEndEpisodeConfirm, titleVisibility: .visible) {
+                Button("End it — back to baseline") {
+                    store.resolveEpisode(episode)
+                }
+                Button("Keep watching", role: .cancel) {}
+            } message: {
+                Text("Usually this happens on its own after 3 normal logs. Ending it early is fine if things cleared up and you stopped logging.")
+            }
+        }
     }
 
     // MARK: Timeline
@@ -194,40 +216,61 @@ struct PetScreen: View {
                 .foregroundColor(.secondary)
         }
         ForEach(entries) { entry in
-            switch entry {
-            case .output(let event):
-                OutputRow(event: event)
-            case .intervention(let intervention):
-                HStack(spacing: 10) {
-                    Image(systemName: intervention.kind.symbol)
-                        .foregroundColor(.accentColor)
-                        .frame(width: 24)
-                    Text(intervention.kind.label)
-                        .font(.subheadline)
-                    Spacer()
-                    Text(shortDateTime(intervention.date))
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
+            timelineRow(entry)
+                .contextMenu {
+                    Button(role: .destructive) {
+                        delete(entry)
+                    } label: {
+                        Label("Delete entry", systemImage: "trash")
+                    }
                 }
-                .padding(10)
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
-            case .exposure(let exposure):
-                ExposureRow(exposure: exposure)
-            case .crossFeed(let feed):
-                HStack(spacing: 10) {
-                    Image(systemName: "fork.knife.circle.fill")
-                        .foregroundColor(Tier.concern.color)
-                        .frame(width: 24)
-                    Text("Ate \(store.pet(feed.foodOwnerID)?.name ?? "?")'s food (\(feed.amount))")
-                        .font(.subheadline)
-                    Spacer()
-                    Text(shortDateTime(feed.date))
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                }
-                .padding(10)
-                .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
+        }
+    }
+
+    @ViewBuilder
+    private func timelineRow(_ entry: AppStore.TimelineEntry) -> some View {
+        switch entry {
+        case .output(let event):
+            OutputRow(event: event)
+        case .intervention(let intervention):
+            HStack(spacing: 10) {
+                Image(systemName: intervention.kind.symbol)
+                    .foregroundColor(.accentColor)
+                    .frame(width: 24)
+                Text(intervention.kind.label)
+                    .font(.subheadline)
+                Spacer()
+                Text(shortDateTime(intervention.date))
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
             }
+            .padding(10)
+            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
+        case .exposure(let exposure):
+            ExposureRow(exposure: exposure)
+        case .crossFeed(let feed):
+            HStack(spacing: 10) {
+                Image(systemName: "fork.knife.circle.fill")
+                    .foregroundColor(Tier.concern.color)
+                    .frame(width: 24)
+                Text("Ate \(store.pet(feed.foodOwnerID)?.name ?? "?")'s food (\(feed.amount))")
+                    .font(.subheadline)
+                Spacer()
+                Text(shortDateTime(feed.date))
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+            .padding(10)
+            .background(RoundedRectangle(cornerRadius: 10).fill(Color(.secondarySystemBackground)))
+        }
+    }
+
+    private func delete(_ entry: AppStore.TimelineEntry) {
+        switch entry {
+        case .output(let event): store.removeEvent(id: event.id)
+        case .intervention(let intervention): store.removeIntervention(id: intervention.id)
+        case .exposure(let exposure): store.removeExposure(id: exposure.id)
+        case .crossFeed(let feed): store.removeCrossFeed(id: feed.id)
         }
     }
 

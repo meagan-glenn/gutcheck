@@ -13,6 +13,7 @@ struct PetEditSheet: View {
     @State private var showBreedPicker = false
     @State private var hasBirthday: Bool
     @State private var birthdate: Date
+    @State private var showArchiveConfirm = false
 
     init(pet: Pet) {
         _pet = State(initialValue: pet)
@@ -94,6 +95,16 @@ struct PetEditSheet: View {
                             .frame(maxWidth: .infinity)
                     }
                 }
+                Section {
+                    Button(role: .destructive) {
+                        showArchiveConfirm = true
+                    } label: {
+                        Text("Remove from household")
+                            .frame(maxWidth: .infinity)
+                    }
+                } footer: {
+                    Text("Every log and episode is kept. Restore any time from the home screen.")
+                }
             }
             .navigationTitle("Edit \(pet.name)")
             .navigationBarTitleDisplayMode(.inline)
@@ -104,6 +115,15 @@ struct PetEditSheet: View {
             }
             .sheet(isPresented: $showBreedPicker) {
                 BreedPicker(species: pet.species, selection: $pet.breed)
+            }
+            .confirmationDialog("Remove \(pet.name) from the household?", isPresented: $showArchiveConfirm, titleVisibility: .visible) {
+                Button("Remove — keep the history", role: .destructive) {
+                    store.archivePet(pet.id)
+                    dismiss()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Any open episode is closed. Nothing is deleted.")
             }
         }
     }

@@ -196,6 +196,39 @@ struct StoolReading: Codable, Equatable {
     }
 }
 
+/// When did this actually happen? Real logging is often retroactive, and every
+/// causal window (24h liquid rule, 48h lookback, 72h attribution) depends on
+/// honest timestamps.
+enum LogTiming: String, CaseIterable, Identifiable {
+    case justNow
+    case earlierToday
+    case yesterday
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .justNow: return "Just now"
+        case .earlierToday: return "Earlier today"
+        case .yesterday: return "Yesterday"
+        }
+    }
+
+    var date: Date {
+        let now = Date()
+        switch self {
+        case .justNow:
+            return now
+        case .earlierToday:
+            // ~6h back, clamped so it never crosses midnight.
+            let floor = Calendar.current.startOfDay(for: now).addingTimeInterval(3600)
+            return max(floor, now.addingTimeInterval(-6 * 3600))
+        case .yesterday:
+            return now.addingTimeInterval(-24 * 3600)
+        }
+    }
+}
+
 /// Triage across all four axes, with the liquid-frequency escalation
 /// (score 7 three or more times in 24h → urgent).
 func triageTier(for reading: StoolReading, liquidCountLast24h: Int) -> Tier {
@@ -336,10 +369,11 @@ struct Pet: Identifiable, Codable, Equatable {
     var mode: PetMode
     var photoFilename: String? // profile photo in Documents/photos; emoji fallback when nil
     var birthdate: Date?
+    var isArchived: Bool // out of the household, history kept
 
     init(id: UUID = UUID(), name: String, species: Species, breed: String, avatar: String,
          conditions: [String] = [], mode: PetMode = .baseline, photoFilename: String? = nil,
-         birthdate: Date? = nil) {
+         birthdate: Date? = nil, isArchived: Bool = false) {
         self.id = id
         self.name = name
         self.species = species
@@ -349,6 +383,22 @@ struct Pet: Identifiable, Codable, Equatable {
         self.mode = mode
         self.photoFilename = photoFilename
         self.birthdate = birthdate
+        self.isArchived = isArchived
+    }
+
+    // Tolerant decoding: fields added after launch must not wipe stored pets.
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        name = try container.decode(String.self, forKey: .name)
+        species = try container.decode(Species.self, forKey: .species)
+        breed = try container.decode(String.self, forKey: .breed)
+        avatar = try container.decode(String.self, forKey: .avatar)
+        conditions = try container.decodeIfPresent([String].self, forKey: .conditions) ?? []
+        mode = try container.decodeIfPresent(PetMode.self, forKey: .mode) ?? .baseline
+        photoFilename = try container.decodeIfPresent(String.self, forKey: .photoFilename)
+        birthdate = try container.decodeIfPresent(Date.self, forKey: .birthdate)
+        isArchived = try container.decodeIfPresent(Bool.self, forKey: .isArchived) ?? false
     }
 
     /// "8 mo" / "4 yrs" — age is what the vet actually asks for.

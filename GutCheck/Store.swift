@@ -69,6 +69,12 @@ final class AppStore: ObservableObject {
         data.pets.first { $0.id == id }
     }
 
+    /// The household as the user sees it — archived animals keep their history
+    /// but leave every picker and list.
+    var activePets: [Pet] {
+        data.pets.filter { !$0.isArchived }
+    }
+
     func activeEpisode(for petID: UUID) -> Episode? {
         data.episodes.first { $0.petID == petID && $0.isActive }
     }
@@ -171,6 +177,41 @@ final class AppStore: ObservableObject {
 
     func removeExposure(id: UUID) {
         data.exposures.removeAll { $0.id == id }
+    }
+
+    // MARK: - Corrections (the record can be wrong; make wrong fixable)
+
+    func removeEvent(id: UUID) {
+        if let event = data.events.first(where: { $0.id == id }),
+           let filename = event.photoFilename {
+            try? FileManager.default.removeItem(at: photoURL(filename))
+        }
+        data.events.removeAll { $0.id == id }
+    }
+
+    func removeIntervention(id: UUID) {
+        data.interventions.removeAll { $0.id == id }
+    }
+
+    func removeCrossFeed(id: UUID) {
+        data.crossFeeds.removeAll { $0.id == id }
+    }
+
+    /// Archive keeps every log and episode; the animal just leaves the household.
+    func archivePet(_ id: UUID) {
+        if let episode = activeEpisode(for: id) {
+            resolveEpisode(episode)
+        }
+        if let index = data.pets.firstIndex(where: { $0.id == id }) {
+            data.pets[index].isArchived = true
+            data.pets[index].mode = .baseline
+        }
+    }
+
+    func restorePet(_ id: UUID) {
+        if let index = data.pets.firstIndex(where: { $0.id == id }) {
+            data.pets[index].isArchived = false
+        }
     }
 
     func exposures(in episode: Episode) -> [ExposureEvent] {
